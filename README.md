@@ -25,3 +25,13 @@ We have extensively used D3 to make visualization of the values we receive from 
 ### JSON Parser
 
 The best part is the parser.
+
+
+### Components to be added
+
+This part contains a list of functions which will be added inside the visualization for interactvity purposes. 
+
+- Zoom/ Pan
+- Details on Demand (Retriving Z index upon hovering)
+- Colour Scale initialization using Chroma.js
+- And some other stuff as well

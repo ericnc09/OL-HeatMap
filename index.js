@@ -17,17 +17,19 @@ function load_rect_tree(rect_js){
     }
 
     return rect;
-
-
 }
 
 
+//this is the grid maker. This can create big grids.
 function construct_grid(width, height) {
     var cell_width=1000/width;
     var cell_height=1000/height;
 
     var cells=[];
 
+
+    //The two for loops are essentially x and y. They create the grid
+    // based on the formula of these two things right here
     //console.log(cell_width);
     for(i=0;i<width;i++){
         for(j=0;j<height;j++){

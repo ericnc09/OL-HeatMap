@@ -34,4 +34,5 @@ This part contains a list of functions which will be added inside the visualizat
 - Zoom/ Pan
 - Details on Demand (Retriving Z index upon hovering)
 - Colour Scale initialization using Chroma.js
-- And some other stuff as well
+- Testing of Real Data-sets
+- Testing Methodology

@@ -1,4 +1,4 @@
-[submodule "overlap-graph"]
-	path = overlap-graph
-	url = https://github.com/tipech/overlap-graph.git
+[submodule "overlapGraph"]
+	path = overlapGraph
+	url = https://github.com/tipech/overlapGraph.git
 	branch = restructure

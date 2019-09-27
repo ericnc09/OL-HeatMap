@@ -72,7 +72,8 @@ $(document).ready(function() {
     var data = {
       'nr_obj': $("#source_count").val(),
       'dimension': $("#source_dimension").val(),
-      'sizepc': $("#source_sizepc").val(),
+      'sizepc': [$("#source_sizepc_lower").val(),
+                 $("#source_sizepc_upper").val()],
       'posnrng': $("#source_distribution").val(),
       'params': [$("#source_parameter_1").val(),
                     $("#source_parameter_2").val(),
@@ -84,16 +85,29 @@ $(document).ready(function() {
       url: "/generate",
       data: JSON.stringify(data),
       success: update_content,
+      error: function(error){alert(error.responseText);},
       contentType: 'application/json',
       dataType: "json"
     });
   });
 
-  function update_content(response){
-    console.log("Great success!");
-    console.log(response);
+  function update_content(data){
+    
+    load_rect_plot(data['results'])
   }
 
+
+  function update_plot_size(){
+    plotSize = Math.max( 500,
+      Math.min($("body").width() - 500, $("body").height() - 24));
+    $("#main").width(plotSize - 12);
+    $("#main").height(plotSize - 12);
+    $("#rectPlot").width(plotSize - 12);
+    $("#rectPlot").height(plotSize - 12);
+  }
+  $(window).resize(update_plot_size)
+  update_plot_size()
+  
 
 
 });

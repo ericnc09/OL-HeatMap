@@ -20,7 +20,8 @@ h2 {
 }
 
 #main {
-  flex-grow: 3;
+  min-width: 500px;
+  min-height: 500px;
 }
 
 

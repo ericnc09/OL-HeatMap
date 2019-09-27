@@ -1,0 +1,126 @@
+html {
+  height: 100%;
+}
+
+body {
+  /*background-color: lightblue;*/
+  height: 100%;
+  margin: 0;
+
+  display: flex;
+  flex-direction: row;
+}
+
+body > div {
+  margin: 10px;
+}
+
+h2 {
+  margin: 0 5px;
+}
+
+#main {
+  flex-grow: 3;
+}
+
+
+
+#sidebar {
+  display: inline-flex;
+  flex-direction: column;
+}
+
+#sidebar > div {
+  min-height: 80px;
+  margin-bottom: 10px;
+  padding: 10px;
+}
+
+
+
+#source > div {
+  /*min-height: 200px;*/
+  display: inline-flex;
+}
+
+#source_choice {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+#source_options {
+  min-width: 281px;
+  margin-left: 10px;
+  border-left: 1px solid #CCC;
+  padding-left: 10px;
+}
+
+#source_options > div {
+  height: 210px;
+}
+
+#source_file_tab {
+  height: 100%;
+  padding-top: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#source_random_tab {
+
+  height: 100%;
+  padding-top: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+#source_random_tab > div {
+  margin: 2px 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+#source_random_tab input[type=number]{
+  width: 48px;
+}
+
+#source_random_tab select{
+  margin-left: 10px;
+}
+
+#source_random_tab label {
+  min-width: 75px;
+  display: inline-block;
+  margin-left: 4px;
+}
+
+#generate {
+  width: 100%;
+  text-align: center;
+}
+
+#source_random_tab button {
+  align-self: center;
+  padding: 4px 8px;
+  background-color: #DFDFDF;
+  border: 1.4px solid #333;
+  box-shadow: 2px 2px #AAA;
+  cursor: pointer;
+}
+
+#source_random_tab button:hover {
+  background-color: lightblue;
+}
+
+
+.sep {
+  flex:1;
+}
+
+.box {
+  border: 2px solid #333;
+  box-shadow: 4px 4px #AAA;  
+}

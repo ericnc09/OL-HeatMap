@@ -1,104 +1,97 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>SampleGraphicPractice</title>
-    <script src="https://d3js.org/d3.v4.min.js"></script>
-    <script src="https://d3js.org/d3-hsv.v0.1.min.js"></script>
-    <script src="index.js" charset="utf-8"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/1.3.4/chroma.min.js"></script>
-<!--    <script src="https://unpkg.com/rbush@2.0.1/rbush.min.js"></script>-->
-    <script src="lib/rbush.js"></script>
-    <script src="lib/d3-tip.js"></script>
+  <meta charset="UTF-8">
+  <title>Efficient Heatmap Overlap Visualization Demo</title>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/1.3.4/chroma.min.js"></script>
 
-<!--    <script src="https://unpkg.com/@d3fc/d3fc-annotation/build/d3fc-annotation.min.js"></script>-->
+  <link rel="stylesheet" type="text/css" href="home.css">
+
+  <script type="text/javascript" src="index.js"></script>
+  
 </head>
 <body>
-
-<div id="div_template">
-<svg width="100" height="100"></svg>
-</div>
-<div>
-    <button type="button" onclick="myFunction()">Click Me!</button>
-</div>
-<style>
-    .d3-tip {
-        line-height: 1;
-        font-weight: bold;
-        padding: 12px;
-        background: rgba(0, 0, 0, 0.8);
-        color: #fff;
-        border-radius: 2px;
-    }
-
-    /* Creates a small triangle extender for the tooltip */
-    .d3-tip:after {
-        box-sizing: border-box;
-        display: inline;
-        font-size: 10px;
-        width: 100%;
-        line-height: 1;
-        color: rgba(0, 0, 0, 0.8);
-        content: "\25BC";
-        position: absolute;
-        text-align: center;
-    }
-
-    /* Style northward tooltips differently */
-    .d3-tip.n:after {
-        margin: -1px 0 0 0;
-        top: 100%;
-        left: 0;
-    }
-
-</style>
-    <script>
-        var data = [];
-        var tree= new rbush(9);
-
-        d3.json("test.json", function (error,myObj) {
-            if (error) throw error;
-            if(myObj.dimension===2){
-                //var tree= new rbush(9);
-                for (i in myObj.regions) {
-                    //data.push(load_rect(myObj.regions[i]));
-                    //data.push(load_rect_tree(myObj.regions[i]));
-                    rect = load_rect_tree(myObj.regions[i]);
-                    data.push(rect);
-                    tree.insert(rect);//this part is test to see if gets loaded
-                    //console.log(data);
-                }
-                var grid = construct_grid(50,50);
-                var grid_rects = [];
-                //console.log(grid);
-                var result, max_c=0;
-                for(cell in grid){
-                    result = tree.search(grid[cell]).length;
-                    grid_rects.push({
-                        "x":grid[cell].minX,
-                        "y":grid[cell].minY,
-                        "w": grid[cell].maxX - grid[cell].minX,
-                        "h": grid[cell].maxY - grid[cell].minY,
-                        "c": result});
-                    max_c=Math.max(result,max_c);
-                }
-                //console.log(grid);//data  loaded in rtree
-                //
-                var t0=performance.now();
-                load_graphics(grid_rects);
-                var t1=performance.now();
-                console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
-                //load_rect_tree(data);
-                //const result = tree.collides({minX: 40, minY: 50, maxX: 60, maxY: 70});
-            }
-        } );
-
-        var width = 1500,
-            height = 1500;
-
-    /*    myFunction(){
-            object.onclick = function(){chroma.scale(['yellow', 'red', 'black']);};
-        }*/
-    </script>
+  <div id="main" class="box">Stuff</div>
+  <div id="sidebar">
+    <div id="source" class="box">
+      <h2>Data Source</h2>
+      <div>
+        <div id="source_choice">
+          <div>
+            <input id="source_choice_random" type="radio" name="source" value="random" checked="checked">
+            <label for="source_choice_random">Generate random</label>
+          </div>
+          <div>
+            <input id="source_choice_file" type="radio" name="source" value="file">
+            <label for="source_choice_file">Load file</label>
+          </div>
+        </div>
+        <div id="source_options">
+          <div id="source_file_tab">
+            <input id="source_file" type="file" name="source_file" accept="application/json">
+          </div>
+          <div id="source_random_tab">
+            <div>
+              <label for="source_count">Number of objects:</label>
+              <input id="source_count" type="number" value="1000">
+            </div>
+            <div>
+              <label for="source_dimension">Dimensions:</label>
+              <input id="source_dimension" type="number" value="2">
+            </div>
+            <div>
+              <label for="source_sizepc">Size (%):</label>
+              <span class="sep"></span>
+              <span>[</span>
+              <input id="source_sizepc_lower" type="number" value="0" step="0.01">
+              <span>,</span>
+              <input id="source_sizepc_upper" type="number" value="0.05" step="0.01">
+              <span>]</span>
+            </div>
+            <div>
+              <label for="source_distribution">Distribution:</label>
+              <select id="source_distribution" >
+                <option value="uniform" selected="selected">Uniform</option>
+                <option value="gauss">Gauss</option>
+                <option value="triangular">Triangular</option>
+                <option value="bimodal">Bimodal Gauss</option>
+              </select>
+            </div>
+            <div><label>Distribution parameters:</label></div>
+            <div>
+              <span>
+                <label for="source_parameter_1">Par 1</label>
+                <input id="source_parameter_1" type="number" step="0.01">  
+              </span>
+              <span>
+                <label for="source_parameter_2">Par 2</label>
+                <input id="source_parameter_2" type="number" step="0.01">  
+              </span>
+            </div>
+            <div>
+              <span>
+                <label for="source_parameter_3">Par 3</label>
+                <input id="source_parameter_3" type="number" step="0.01">  
+              </span>
+              <span>
+                <label for="source_parameter_4">Par 4</label>
+                <input id="source_parameter_4" type="number" step="0.01">  
+              </span>              
+            </div>
+            <div>
+              <span id="generate">
+                <button>Generate</button>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="parameters" class="box">Stuff</div>
+    <div id="charts" class="box">Stuff</div>
+  </div>
 </body>
 </html>

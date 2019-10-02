@@ -16,8 +16,8 @@
 </head>
 <body>
   <div id="main" class="box">
-    <svg id="rectPlot" width="100" height="100"></svg>
-    <!-- <svg id="gridPlot" width="100" height="100"></svg> -->
+    <svg id="rectPlot" viewBox="0 0 1000 1000" width="100" height="100" preserveAspectRatio="xMaxYMax slice"></svg>
+    <svg id="gridPlot" width="100" height="100" style="display: none;"></svg>
   </div>
   <div id="sidebar">
     <div id="source" class="box">
@@ -40,11 +40,15 @@
           <div id="source_random_tab">
             <div>
               <label for="source_count">Number of objects:</label>
-              <input id="source_count" type="number" value="1000">
+              <input id="source_count" type="number" value="500">
             </div>
             <div>
-              <label for="source_dimension">Dimensions:</label>
-              <input id="source_dimension" type="number" value="2">
+              <span for="source_dimension">Dimensions:</span>
+              <span class="sep"></span>
+              <input id="source_dimension_1d" name="source_dimension" type="radio" value="1" disabled="disabled">
+              <label for="source_dimension_1d">1</label>
+              <input id="source_dimension_2d" name="source_dimension" type="radio" value="2" checked="checked">
+              <label for="source_dimension_2d">2</label>
             </div>
             <div>
               <label for="source_sizepc">Size (%):</label>
@@ -59,8 +63,8 @@
               <label for="source_distribution">Distribution:</label>
               <select id="source_distribution" >
                 <option value="uniform" selected="selected">Uniform</option>
-                <option value="gauss">Gauss</option>
                 <option value="triangular">Triangular</option>
+                <option value="gauss">Gauss</option>
                 <option value="bimodal">Bimodal Gauss</option>
               </select>
             </div>
@@ -68,21 +72,21 @@
             <div>
               <span>
                 <label for="source_parameter_1">Par 1</label>
-                <input id="source_parameter_1" type="number" step="0.01">  
+                <input id="source_parameter_1" type="number" step="0.01" value="0.5">  
               </span>
               <span>
                 <label for="source_parameter_2">Par 2</label>
-                <input id="source_parameter_2" type="number" step="0.01">  
+                <input id="source_parameter_2" type="number" step="0.01" value="0.2">  
               </span>
             </div>
             <div>
               <span>
                 <label for="source_parameter_3">Par 3</label>
-                <input id="source_parameter_3" type="number" step="0.01">  
+                <input id="source_parameter_3" type="number" step="0.01" value="0.5">
               </span>
               <span>
                 <label for="source_parameter_4">Par 4</label>
-                <input id="source_parameter_4" type="number" step="0.01">  
+                <input id="source_parameter_4" type="number" step="0.01" value="0.2">  
               </span>              
             </div>
             <div>
@@ -94,7 +98,39 @@
         </div>
       </div>
     </div>
-    <div id="parameters" class="box">Stuff</div>
+    <div id="viz" class="box">
+      <h2>Data Visualization</h2>
+      <div id="viz_choice">
+        <input id="viz_choice_overlap" type="radio" name="viz" value="overlap" checked="checked">
+        <label for="viz_choice_overlap">Overlap-based</label>
+        <input id="viz_choice_grid" type="radio" name="viz" value="grid">
+        <label for="viz_choice_grid">Grid-based</label>
+        <span class="sep"></span>
+        <span id="viz_grid_params" style="visibility: hidden;">
+          <label for="viz_grid_size">Grid size</label>
+          <input id="viz_grid_size" type="number" name="viz_grid_size" value="1000">
+        </span>
+      </div>
+      <div id="viz_color">
+        <span>Color Scale: </span>
+        <span class="sep"></span>
+        <div id="viz_scale" class="dropdown">
+          <a class="dropbtn">Scale 1</a>
+          <div class="dropdown-content">
+          </div>
+        </div>
+
+
+
+
+
+        <!-- <select id="viz_scale">
+          <option value="1">Scale 1</option>
+          <option value="2">Scale 2</option>
+          <option value="3">Scale 3</option>
+        </select> -->
+      </div>
+    </div>
     <div id="charts" class="box">Stuff</div>
   </div>
 </body>

@@ -52,10 +52,15 @@ def generate():
     sizepc=Interval(*params['sizepc']))
 
   regionset = gen.get_regionset(int(params['nr_obj']))
+  print("000")
   alg = SLIG(regionset)
+  print("111")
   alg.prepare()
+  print("222")
   alg.sweep()
+  print("333")
   intersections = alg.enumerate_all()
+  print("444")
 
   results = regionset.copy().merge(intersections)
 

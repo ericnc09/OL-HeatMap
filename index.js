@@ -1,5 +1,60 @@
 $(document).ready(function() {
   
+  // ==== Common ====
+
+  // tab handling
+  $('#tabs li').click(function(){
+
+    if(! ($(this).hasClass('active') || $(this).hasClass('disabled'))){ 
+      $('#tabs li').removeClass('active');           
+      $(this).addClass('active');
+
+      $('.tab_content').hide();
+      $('#'+ $(this).attr('id') + '_tab').fadeIn();
+
+      if($(this).attr("id") == "data"){
+        // if this is the first tab, show data plot
+        
+        $("#main svg").hide()
+        $("#dataPlot").show()
+      } else {
+        // otherwise show whichever viz plot is active
+
+        $("#dataPlot").hide()
+        $("#main svg.active").show()
+      }
+      $('.'+ $(this).attr('id') + '_plot').addClass("tab_active");
+    }
+  });
+
+  // radio box handling
+  $('.radiobox').click(function(e){
+
+    if(! $(this).hasClass('active')){ 
+      var group = $(this).attr("data-group")
+      $('.radiobox[data-group=' + group + ']').removeClass('active');
+      $(this).addClass('active');
+    }
+  });
+
+  // window resize handling 
+  function update_plot_size(){
+    plotSize = Math.max(500,
+      Math.min($("body").width() - 505, $("body").height()-24));
+    $("#main").width(plotSize);
+    $("#main").height(plotSize);
+    $("#main svg").width(plotSize);
+    $("#main svg").height(plotSize);
+  }
+  $(window).resize(update_plot_size)
+  update_plot_size()
+
+
+  // ==== Data source tab ====
+
+  // ---- Color scale dropdown ----
+
+  // Initialize
   var color_scales = {
     'Scale 1': ['yellow','red'],
     'Scale 2': ['#8cbeff','#001454']
@@ -17,13 +72,7 @@ $(document).ready(function() {
     i++;
   }
 
-  function get_color_scale(){
-
-    var color1 = $('#viz_scale .dropbtn').attr('data-color1');
-    var color2 = $('#viz_scale .dropbtn').attr('data-color2');
-
-    return chroma.scale([color1,color2]).mode('lch');
-  }
+  // Click update
   function update_color_scale(id){
     
     var element = $('#viz_scale .dropbtn');
@@ -40,132 +89,163 @@ $(document).ready(function() {
   })
   update_color_scale("viz_scale1")
 
+  // Retrieve value
+  function get_color_scale(){
 
+    var color1 = $('#viz_scale .dropbtn').attr('data-color1');
+    var color2 = $('#viz_scale .dropbtn').attr('data-color2');
 
+    return chroma.scale([color1,color2]).mode('lch');
+  }
+
+  // ---- Distribution choice ----
 
   // update the distribution parameters based on selected distribution
   function update_distribution(){
     switch($("#source_distribution").val()){
       case "uniform":
-        $("label[for='source_parameter_1']").text("No Parameters");
-        $("#source_parameter_1").hide();
-        $("#source_parameter_1").parent().css('visibility', 'visible');
-        $("#source_parameter_2").parent().css('visibility', 'hidden');
-        $("#source_parameter_3").parent().css('visibility', 'hidden');
-        $("#source_parameter_4").parent().css('visibility', 'hidden');
+        $("label[for='dist_param_1']").text("No Parameters");
+        $("#dist_param_1").hide();
+        $("#dist_param_1").parent().css('visibility', 'visible');
+        $("#dist_param_2").parent().css('visibility', 'hidden');
+        $("#dist_param_3").parent().css('visibility', 'hidden');
+        $("#dist_param_4").parent().css('visibility', 'hidden');
       break;
       case "gauss":
-        $("label[for='source_parameter_1']").text("Mean:");
-        $("label[for='source_parameter_2']").text("Sigma:");
+        $("label[for='dist_param_1']").text("Mean:");
+        $("label[for='dist_param_2']").text("Sigma:");
         $("#no_param").hide();
-        $("#source_parameter_1").show();
-        $("#source_parameter_1").parent().css('visibility', 'visible');
-        $("#source_parameter_2").parent().css('visibility', 'visible');
-        $("#source_parameter_3").parent().css('visibility', 'hidden');
-        $("#source_parameter_4").parent().css('visibility', 'hidden');
+        $("#dist_param_1").show();
+        $("#dist_param_1").parent().css('visibility', 'visible');
+        $("#dist_param_2").parent().css('visibility', 'visible');
+        $("#dist_param_3").parent().css('visibility', 'hidden');
+        $("#dist_param_4").parent().css('visibility', 'hidden');
       break;
       case "triangular":
-        $("label[for='source_parameter_1']").text("Mode:");
+        $("label[for='dist_param_1']").text("Mode:");
         $("#no_param").hide();
-        $("#source_parameter_1").show();
-        $("#source_parameter_1").parent().css('visibility', 'visible');
-        $("#source_parameter_2").parent().css('visibility', 'hidden');
-        $("#source_parameter_3").parent().css('visibility', 'hidden');
-        $("#source_parameter_4").parent().css('visibility', 'hidden');
+        $("#dist_param_1").show();
+        $("#dist_param_1").parent().css('visibility', 'visible');
+        $("#dist_param_2").parent().css('visibility', 'hidden');
+        $("#dist_param_3").parent().css('visibility', 'hidden');
+        $("#dist_param_4").parent().css('visibility', 'hidden');
       break;
       case "bimodal":
-        $("label[for='source_parameter_1']").text("1st Mean:");
-        $("label[for='source_parameter_2']").text("1st Sigma:");
-        $("label[for='source_parameter_3']").text("2nd Mean:");
-        $("label[for='source_parameter_4']").text("2nd Sigma:");
+        $("label[for='dist_param_1']").text("1st Mean:");
+        $("label[for='dist_param_2']").text("1st Sigma:");
+        $("label[for='dist_param_3']").text("2nd Mean:");
+        $("label[for='dist_param_4']").text("2nd Sigma:");
         $("#no_param").hide();
-        $("#source_parameter_1").show();
-        $("#source_parameter_1").parent().css('visibility', 'visible');
-        $("#source_parameter_2").parent().css('visibility', 'visible');
-        $("#source_parameter_3").parent().css('visibility', 'visible');
-        $("#source_parameter_4").parent().css('visibility', 'visible');
+        $("#dist_param_1").show();
+        $("#dist_param_1").parent().css('visibility', 'visible');
+        $("#dist_param_2").parent().css('visibility', 'visible');
+        $("#dist_param_3").parent().css('visibility', 'visible');
+        $("#dist_param_4").parent().css('visibility', 'visible');
       break;
     }
   }
   $("#source_distribution").change(update_distribution);
   update_distribution()
 
+  // ---- Data generation handling ----
 
-
-  function update_source_choice(value){
-
-    switch( value ){
-      case "random":
-        $("#source_file_tab").hide();
-        $("#source_random_tab").show();
-      break;
-      case "file":
-        $("#source_file_tab").show();
-        $("#source_random_tab").hide();
-      break;
-    }
-  }
-  $('input[type=radio][name=source]').change(function() {
-    update_source_choice(this.value);
-  });
-  update_source_choice($('#source_choice_random').val());
-
+  // Get data parameters and post to backend
   $("#generate").click(function(){
-
+    
     var data = {
       'nr_obj': $("#source_count").val(),
       'dimension': $("input[name='source_dimension']:checked").val(),
       'sizepc': [$("#source_sizepc_lower").val(),
                  $("#source_sizepc_upper").val()],
       'posnrng': $("#source_distribution").val(),
-      'params': [$("#source_parameter_1").val(),
-                    $("#source_parameter_2").val(),
-                    $("#source_parameter_3").val(),
-                    $("#source_parameter_4").val()]
+      'params': [$("#dist_param_1").val(),
+                 $("#dist_param_2").val(),
+                 $("#dist_param_3").val(),
+                 $("#dist_param_4").val()]
     }
 
     $.post({
       url: "/generate",
       data: JSON.stringify(data),
-      success: update_content,
+      success: update_data_plot,
       error: function(error){alert(error.responseText);},
       contentType: 'application/json',
       dataType: "json"
     });
   });
 
-  function update_content(data){
+  // Update data plot with results
+  function update_data_plot(data){
     
-    load_rect_plot(data['results'])
+    load_data_plot(data)
+    $("#tabs > li").removeClass("disabled")
+
+    window.regions = data;
+  }
+
+
+  // ==== Visualization tab ====
+
+  // switch between visualizations
+  $("#viz_overlap").click(function(){
+    $("#overlapPlot").addClass("active")
+    $("#overlapPlot").show()
+    $("#gridPlot").removeClass("active")
+    $("#gridPlot").hide()
+  })
+
+  $("#viz_grid").click(function(){
+    $("#gridPlot").addClass("active")
+    $("#gridPlot").show()
+    $("#overlapPlot").removeClass("active")
+    $("#overlapPlot").hide()
+  })
+
+  // Get visualization parameters and post to backend
+  $("#visualize").click(function(){
+    
+    var data = {
+      'regions': window.regions,
+      'grid_size': $("#viz_grid_size").val()}
+
+    $.post({
+      url: "/visualize",
+      data: JSON.stringify(data),
+      success: update_viz_plot,
+      error: function(error){alert(error.responseText);},
+      contentType: 'application/json',
+      dataType: "json"
+    });
+  });
+
+  // Update visualization plots with results
+  function update_viz_plot(data){
+    
+    load_overlap_plot(data)
     set_rect_plot_colors(get_color_scale())
   }
 
+  // ==== Evaluation tab ====
+
+
+
+
+  
+
+
   $("input[type=radio][name=viz]").change(function(){
     if (this.value == "overlap") {
-      $("#rectPlot").show()
+      $("#overlapPlot").show()
       $("#gridPlot").hide()
       $("#viz_grid_params").css({"visibility":"hidden"})
     } else {
-      $("#rectPlot").hide()
+      $("#overlapPlot").hide()
       $("#gridPlot").show()
       $("#viz_grid_params").css({"visibility":"visible"})
     
     }
   })
   
-
-
-  function update_plot_size(){
-    plotSize = Math.max( 500,
-      Math.min($("body").width() - 505, $("body").height()-24));
-    $("#main").width(plotSize);
-    $("#main").height(plotSize);
-    $("#rectPlot").width(plotSize);
-    $("#rectPlot").attr("width",plotSize);
-    $("#rectPlot").attr("height",plotSize);
-  }
-  $(window).resize(update_plot_size)
-  update_plot_size()
   
 
 

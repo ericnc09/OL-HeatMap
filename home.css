@@ -1,22 +1,16 @@
+/* ==== Top-level elements ==== */
+
 html {
   height: 100%;
 }
 
 body {
-  /*background-color: lightblue;*/
   height: 100%;
   margin: 0;
 
   display: flex;
   flex-direction: row;
-}
-
-body > div {
-  margin: 10px;
-}
-
-h2 {
-  margin: 0 5px;
+  align-items: flex-start;
 }
 
 #main {
@@ -24,114 +18,39 @@ h2 {
   min-height: 500px;
 }
 
-
-
 #sidebar {
-  display: inline-flex;
-  flex-direction: column;
+
+  min-width: 325px;
 }
 
-#sidebar > div {
-  min-height: 80px;
-  margin-bottom: 10px;
-  padding: 10px;
-}
+/* ==== Data source tab elements ==== */
 
-
-
-#source > div {
-  /*min-height: 200px;*/
-  display: inline-flex;
-}
-
-#source_choice {
-  min-width: 136px;
-  display: inline-flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-}
-
-#source_options {
-  min-width: 281px;
-  margin-left: 10px;
-  border-left: 1px solid #CCC;
-  padding-left: 10px;
-}
-
-#source_options > div {
-  height: 210px;
-}
 
 #source_file_tab {
-  height: 100%;
-  padding-top: 5px;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
 }
 
-#source_random_tab {
-
-  height: 100%;
-  padding-top: 5px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-}
-
-#source_random_tab > div {
-  margin: 2px 0;
+#source_random > div {
+  margin: 3px 5px;
   display: flex;
   justify-content: space-between;
 }
 
-#source_random_tab input[type=number]{
-  width: 48px;
-}
 
-#source_random_tab select{
-  margin-left: 10px;
-}
+/* ==== Visualization tab elements ==== */
 
-#source_random_tab label {
-  margin-right: 4px;
-}
+/* ---- Grid/overlap handling ---- */
 
-#generate {
-  width: 100%;
-  text-align: center;
-}
-
-#source_random_tab button {
-  align-self: center;
-  padding: 4px 8px;
-  background-color: #DFDFDF;
-  border: 1.4px solid #333;
-  box-shadow: 2px 2px #AAA;
-  cursor: pointer;
-}
-
-#source_random_tab button:hover {
-  background-color: lightblue;
-}
-
-#viz > div {
-  margin-top: 10px;
-}
-
-#viz_choice {
-
+#viz_grid_params, #viz_color {
   display: flex;
 }
 
-#viz label {
-  white-space: nowrap;
-  margin-right: 5px;
+#viz_tab > .box > div {
+
+  margin: 3px 5px;
 }
 
-#viz input[type=number] {
-  width: 60px
-}
+/* ---- Color scale handling ---- */
 
 #viz_color  {
   display: flex;
@@ -151,6 +70,69 @@ h2 {
   text-align: center;
 }
 
+/* ---- Visualization button ---- */
+#viz_tab button {
+  margin: 10px auto;
+  padding: 8px;
+}
+
+/* ==== Evaluation tab elements ==== */
+
+
+/* ==== Common elements ==== */
+
+/* ---- Tab handling ---- */
+
+#tabs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-bottom: 2px solid #333;
+  font-size: 0; /* white space fix */
+}
+
+#tabs li {
+  display: inline-block;
+  margin: 2px 1px 0;
+  padding: 4px 6px;
+  border: 1.4px solid #333;
+  border-bottom: none;
+/*  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;*/
+  font-size: initial; /* white space fix */
+  cursor: pointer;
+}
+
+#tabs li.disabled {
+  background-color: #DFDFDF;
+}
+
+#tabs li:hover:not(.active) {
+  background-color: lightblue;
+}
+
+#tabs .active {
+  border-bottom: 2px solid white;
+  margin-bottom: -2px;
+  cursor: default;
+}
+
+/* ---- Radiobox handling ---- */
+
+.radiobox {
+  padding-bottom: 10px;
+}
+
+.radiobox:not(.active) {
+  background-color: #DFDFDF;
+  cursor: pointer;
+}
+
+.radiobox:not(.active):hover, .radiobox:not(.active):hover *{
+  background-color: lightblue !important;
+}
+
+/* ---- Dropdown select handling ---- */
 
 .dropdown {
   overflow: hidden;
@@ -189,13 +171,69 @@ h2 {
   display: block;
 }
 
+/* ---- Misc visual helpers ---- */
+
+h3 {
+  margin:  5px;
+}
+
+label {
+  margin-left: 5px;
+}
+
+input[type=number] {
+  width: 60px;
+}
 
 .sep {
   flex:1;
 }
 
-
 .box {
+  margin: 10px;
   border: 2px solid #333;
-  box-shadow: 4px 4px #AAA;  
+  box-shadow: 4px 4px #AAA;
 }
+
+button {
+  display: block;
+  margin: 0 auto;
+  padding: 4px 8px;
+  background-color: #DFDFDF;
+  border: 1.4px solid #333;
+  box-shadow: 2px 2px #AAA;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: lightblue;
+}
+
+
+
+
+
+
+/*
+#viz > div {
+  margin-top: 10px;
+}
+
+#viz_choice {
+
+  display: flex;
+}
+
+#viz label {
+  white-space: nowrap;
+  margin-right: 5px;
+}
+
+#viz input[type=number] {
+  width: 60px
+}
+
+
+
+*/

@@ -16,88 +16,118 @@
 </head>
 <body>
   <div id="main" class="box">
-    <svg id="rectPlot" viewBox="0 0 1000 1000" width="100" height="100" preserveAspectRatio="xMaxYMax slice"></svg>
-    <svg id="gridPlot" width="100" height="100" style="display: none;"></svg>
+    <svg id="dataPlot" viewBox="0 0 1000 1000"></svg>
+    <svg id="overlapPlot" viewBox="0 0 1000 1000" style="display: none;"></svg>
+    <svg id="gridPlot" viewBox="0 0 1000 1000" style="display: none;"></svg>
   </div>
-  <div id="sidebar">
-    <div id="source" class="box">
-      <h2>Data Source</h2>
-      <div>
-        <div id="source_choice">
-          <div>
-            <input id="source_choice_random" type="radio" name="source" value="random" checked="checked">
-            <label for="source_choice_random">Generate random</label>
-          </div>
-          <div>
-            <input id="source_choice_file" type="radio" name="source" value="file">
-            <label for="source_choice_file">Load file</label>
-          </div>
+  <div id="sidebar" class="box">
+    <ul id="tabs">
+      <li id="data" class="active">Data</li>
+      <li id="viz" class="disabled">Visualization</li>
+      <li id="eval" class="disabled">Evaluation</li>
+    </ul>
+    <div id="data_tab" class="tab_content">
+      <div id="source_random" class="box radiobox" data-group="source">
+        <h3>Generate new</h3>
+        <div>
+          <label for="source_count">Number of objects:</label>
+          <input id="source_count" type="number" value="500">
         </div>
-        <div id="source_options">
-          <div id="source_file_tab">
-            <input id="source_file" type="file" name="source_file" accept="application/json">
-          </div>
-          <div id="source_random_tab">
-            <div>
-              <label for="source_count">Number of objects:</label>
-              <input id="source_count" type="number" value="500">
-            </div>
-            <div>
-              <span for="source_dimension">Dimensions:</span>
-              <span class="sep"></span>
-              <input id="source_dimension_1d" name="source_dimension" type="radio" value="1" disabled="disabled">
-              <label for="source_dimension_1d">1</label>
-              <input id="source_dimension_2d" name="source_dimension" type="radio" value="2" checked="checked">
-              <label for="source_dimension_2d">2</label>
-            </div>
-            <div>
-              <label for="source_sizepc">Size (%):</label>
-              <span class="sep"></span>
-              <span>[</span>
-              <input id="source_sizepc_lower" type="number" value="0" step="0.01">
-              <span>,</span>
-              <input id="source_sizepc_upper" type="number" value="0.05" step="0.01">
-              <span>]</span>
-            </div>
-            <div>
-              <label for="source_distribution">Distribution:</label>
-              <select id="source_distribution" >
-                <option value="uniform" selected="selected">Uniform</option>
-                <option value="triangular">Triangular</option>
-                <option value="gauss">Gauss</option>
-                <option value="bimodal">Bimodal Gauss</option>
-              </select>
-            </div>
-            <div><label>Distribution parameters:</label></div>
-            <div>
-              <span>
-                <label for="source_parameter_1">Par 1</label>
-                <input id="source_parameter_1" type="number" step="0.01" value="0.5">  
-              </span>
-              <span>
-                <label for="source_parameter_2">Par 2</label>
-                <input id="source_parameter_2" type="number" step="0.01" value="0.2">  
-              </span>
-            </div>
-            <div>
-              <span>
-                <label for="source_parameter_3">Par 3</label>
-                <input id="source_parameter_3" type="number" step="0.01" value="0.5">
-              </span>
-              <span>
-                <label for="source_parameter_4">Par 4</label>
-                <input id="source_parameter_4" type="number" step="0.01" value="0.2">  
-              </span>              
-            </div>
-            <div>
-              <span id="generate">
-                <button>Generate</button>
-              </span>
-            </div>
-          </div>
+        <div>
+          <label for="source_dimension">Dimensions:</label>
+          <span class="sep"></span>
+          <input id="source_dimension_1d" name="source_dimension" type="radio" value="1" disabled="disabled">
+          <label for="source_dimension_1d">1</label>
+          <input id="source_dimension_2d" name="source_dimension" type="radio" value="2" checked="checked">
+          <label for="source_dimension_2d">2</label>
+        </div>
+        <div>
+          <label for="source_sizepc">Size (%):</label>
+          <span class="sep"></span>
+          <span>[</span>
+          <input id="source_sizepc_lower" type="number" value="0" step="0.01">
+          <span>,</span>
+          <input id="source_sizepc_upper" type="number" value="0.05" step="0.01">
+          <span>]</span>
+        </div>
+        <div>
+          <label for="source_distribution">Distribution:</label>
+          <select id="source_distribution" >
+            <option value="uniform" selected="selected">Uniform</option>
+            <option value="triangular">Triangular</option>
+            <option value="gauss">Gauss</option>
+            <option value="bimodal">Bimodal Gauss</option>
+          </select>
+        </div>
+        <div><label>Distribution parameters:</label></div>
+        <div>
+          <span>
+            <label for="dist_param_1">Par 1</label>
+            <input id="dist_param_1" type="number" step="0.01" value="0.5">  
+          </span>
+          <span>
+            <label for="dist_param_2">Par 2</label>
+            <input id="dist_param_2" type="number" step="0.01" value="0.2">  
+          </span>
+        </div>
+        <div>
+          <span>
+            <label for="dist_param_3">Par 3</label>
+            <input id="dist_param_3" type="number" step="0.01" value="0.5">
+          </span>
+          <span>
+            <label for="dist_param_4">Par 4</label>
+            <input id="dist_param_4" type="number" step="0.01" value="0.2">  
+          </span>              
+        </div>
+        <div class="button_box">
+          <button id="generate">Generate</button>
+        </div>
+      </div>
+      <div id="source_file" class="box radiobox" data-group="source">
+        <h3>Load from file</h3>
+        <div id="source_file_tab">
+          <label for="source_file">File: </label>
+          <span class="sep"></span>
+          <input id="source_file" type="file" name="source_file" accept="application/json">
         </div>
       </div>
     </div>
+    <div id="viz_tab" class="tab_content" style="display: none;">
+      <div id="viz_overlap" class="box radiobox" data-group="viz">
+        <h3>Overlap-based</h3>
+        <!-- <div class="button_box">
+          <button id="overlap_visualize">Visualize</button>
+        </div> -->
+      </div>
+      <div id="viz_grid" class="box radiobox" data-group="viz">
+        <h3>Grid-based</h3>
+        <div id="viz_grid_params">
+          <label for="viz_grid_size">Grid size: </label>
+          <span class="sep"></span>
+          <input id="viz_grid_size" type="number" name="viz_grid_size" value="1000">
+        </div>
+      </div>
+      <div id="viz_color" class="box">
+        <h3>Color Scale</h3>
+        <span class="sep"></span>
+        <div id="viz_scale" class="dropdown">
+          <a class="dropbtn">Scale 1</a>
+          <div class="dropdown-content">
+          </div>
+        </div>
+      </div>
+      <div class="button_box">
+        <button id="visualize">Visualize</button>
+      </div>
+
+    </div>
+    <div id="eval_tab" class="tab_content" style="display: none;">
+      Test
+    </div>
+
+
+    <!-- 
     <div id="viz" class="box">
       <h2>Data Visualization</h2>
       <div id="viz_choice">
@@ -124,14 +154,10 @@
 
 
 
-        <!-- <select id="viz_scale">
-          <option value="1">Scale 1</option>
-          <option value="2">Scale 2</option>
-          <option value="3">Scale 3</option>
-        </select> -->
+        
       </div>
     </div>
-    <div id="charts" class="box">Stuff</div>
+    <div id="charts" class="box">Stuff</div> -->
   </div>
 </body>
 </html>

@@ -52,19 +52,36 @@ def generate():
     sizepc=Interval(*params['sizepc']))
 
   regionset = gen.get_regionset(int(params['nr_obj']))
-  print("000")
-  alg = SLIG(regionset)
-  print("111")
-  alg.prepare()
-  print("222")
-  alg.sweep()
-  print("333")
-  intersections = alg.enumerate_all()
-  print("444")
 
+
+  # print("000")
+  # alg = SLIG(regionset)
+  # print("111")
+  # alg.prepare()
+  # print("222")
+  # alg.sweep()
+  # print("333")
+  # intersections = alg.enumerate_all()
+  # print("444")
+
+  # results = regionset.copy().merge(intersections)
+
+  return json.dumps(regionset.to_dict())
+
+@post('/visualize')
+def visualize():
+  data = json.loads(request.body.read())
+  regionset = RegionSet.from_dict(data['regions'])
+
+  alg = SLIG(regionset)
+  alg.prepare()
+  alg.sweep()
+  intersections = alg.enumerate_all()
   results = regionset.copy().merge(intersections)
 
-  return json.dumps({'results':results.to_dict()})
+  grid_size = data['grid_size']
+
+  return json.dumps(results.to_dict())
 
 
 run(host='0.0.0.0', port=8080, debug=True, reloader=True)

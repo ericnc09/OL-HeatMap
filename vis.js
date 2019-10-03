@@ -1,5 +1,29 @@
+// draw a plot with only the data regions, no overlaps/grid
+function load_data_plot(data){
 
-function load_rect_plot(data){
+  var svg = d3.select("#dataPlot");
+
+  svg.selectAll("rect").remove();
+  var rects = svg.selectAll("rects")
+    .data(data.regions)
+    .enter()
+    .append("rect");
+
+  var rectAttributes = rects
+    .attr("x", function(r) {
+      return r.factors[0].lower;} )
+    .attr("y", function (r){return r.factors[1].upper;})
+    .attr("width", function(r) {
+      return r.factors[0].upper - r.factors[0].lower;})
+    .attr("height", function(r){
+      return r.factors[1].upper - r.factors[1].lower;})
+    .attr("fill-opacity", 0)
+    .attr("stroke", "black")
+    .attr("stroke-width", 1.5)
+}
+
+
+function load_overlap_plot(data){
 
   var max_overlap = 0;
   for (var i=0; i<data.regions.length; i++){
@@ -9,8 +33,8 @@ function load_rect_plot(data){
     }
   }
 
-  var svg = d3.select("svg");
-  $("svg").attr('data-max-overlap', max_overlap)
+  var svg = d3.select("#overlapPlot");
+  svg.attr('data-max-overlap', max_overlap)
 
   svg.selectAll("rect").remove();
 
@@ -39,13 +63,14 @@ function load_rect_plot(data){
   data={}
 }
 
-function load_grid_plot(data)
+function load_grid_plot(data){}
 
 function set_rect_plot_colors(colorScale){
 
-  colors = colorScale.colors($('svg').attr("data-max-overlap"));
+  colors = colorScale.colors($('#overlapPlot,#gridPlot')
+    .attr("data-max-overlap"));
 
-  $('svg rect').each(function(){
+  $('#overlapPlot rect').each(function(){
     $(this).css("fill", colors[$(this).attr("data-c")-1])
   })
 

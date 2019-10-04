@@ -5,6 +5,7 @@ from pprint import pprint
 from overlapGraph.generator import Randoms, RegionGenerator
 from overlapGraph.slig.datastructs import Region, RegionSet, RIGraph, Interval
 from overlapGraph.slig import SLIG
+from grid import OverlapGrid
 
 
 # starting screen
@@ -53,19 +54,6 @@ def generate():
 
   regionset = gen.get_regionset(int(params['nr_obj']))
 
-
-  # print("000")
-  # alg = SLIG(regionset)
-  # print("111")
-  # alg.prepare()
-  # print("222")
-  # alg.sweep()
-  # print("333")
-  # intersections = alg.enumerate_all()
-  # print("444")
-
-  # results = regionset.copy().merge(intersections)
-
   return json.dumps(regionset.to_dict())
 
 @post('/visualize')
@@ -77,11 +65,23 @@ def visualize():
   alg.prepare()
   alg.sweep()
   intersections = alg.enumerate_all()
-  results = regionset.copy().merge(intersections)
+  overlap_results = regionset.copy().merge(intersections)
 
   grid_size = data['grid_size']
 
-  return json.dumps(results.to_dict())
+  grid = OverlapGrid(regionset, grid_size)
+
+  grid.construct_rtree()
+  grid_results = grid.get_cell_overlaps()
+
+  eval_grid = OverlapGrid(overlap_results, grid_size)
+  eval_grid.construct_rtree()
+  eval_results = eval_grid.get_cell_eval(grid_results)
+
+  print(eval_results)
+
+  return json.dumps({'overlap':overlap_results.to_dict(),
+    'grid':grid_results.to_dict(), 'eval': eval_results})
 
 
 run(host='0.0.0.0', port=8080, debug=True, reloader=True)

@@ -56,8 +56,8 @@ $(document).ready(function() {
 
   // Initialize
   var color_scales = {
-    'Scale 1': ['yellow','red'],
-    'Scale 2': ['#8cbeff','#001454']
+    'Scale 1': ['#8cbeff','#001454'],
+    'Scale 2': ['yellow','red']
   }
   var i = 1;
   for (var key in color_scales) {
@@ -85,7 +85,7 @@ $(document).ready(function() {
   }
   $('#viz_scale .dropdown-content a').click(function(){
     update_color_scale($(this).attr("id"))
-    set_rect_plot_colors(get_color_scale())
+    set_plot_colors(get_color_scale())
   })
   update_color_scale("viz_scale1")
 
@@ -181,6 +181,9 @@ $(document).ready(function() {
     $("#tabs > li").removeClass("disabled")
 
     window.regions = data;
+
+    // Manually trigger data visualization
+    $("#visualize").click()
   }
 
 
@@ -221,8 +224,32 @@ $(document).ready(function() {
   // Update visualization plots with results
   function update_viz_plot(data){
     
-    load_overlap_plot(data)
-    set_rect_plot_colors(get_color_scale())
+    load_plot(data['overlap'], "#overlapPlot")
+    load_plot(data['grid'], "#gridPlot")
+    set_plot_colors(get_color_scale())
+    assign_rect_handlers()
+
+    $("#eval_tab").text(data['eval'])
+  }
+
+  // Assign mouse hover event handlers to plot rects for tooltip 
+  function assign_rect_handlers(){
+   
+    // tooltip handling
+    $("#overlapPlot rect, #gridPlot rect").hover(function(){
+      // when mousing over rectangle
+      $("#tooltip").html(
+        "<b>Details:</b>"
+        + "<br>x: " + Number.parseFloat($(this).attr("x")).toFixed(2)
+        + "<br>y: " + Number.parseFloat($(this).attr("y")).toFixed(2)
+        + "<br>width: " + Number.parseFloat($(this).attr("width")).toFixed(2)
+        + "<br>height: " + Number.parseFloat($(this).attr("height")).toFixed(2)
+        + "<br>overlaps: " + $(this).attr("data-c"))
+      $("#tooltip").show()
+    }, function(){
+      // when mouse leaving rectangle
+      $("#tooltip").hide()
+    })
   }
 
   // ==== Evaluation tab ====
@@ -233,20 +260,7 @@ $(document).ready(function() {
   
 
 
-  $("input[type=radio][name=viz]").change(function(){
-    if (this.value == "overlap") {
-      $("#overlapPlot").show()
-      $("#gridPlot").hide()
-      $("#viz_grid_params").css({"visibility":"hidden"})
-    } else {
-      $("#overlapPlot").hide()
-      $("#gridPlot").show()
-      $("#viz_grid_params").css({"visibility":"visible"})
-    
-    }
-  })
-  
-  
-
+  // Manually trigger data generation
+  $("#generate").click()
 
 });

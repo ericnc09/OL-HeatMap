@@ -17,7 +17,7 @@
 <body>
   <div id="main" class="box">
     <svg id="dataPlot" viewBox="0 0 1000 1000"></svg>
-    <svg id="overlapPlot" viewBox="0 0 1000 1000" style="display: none;"></svg>
+    <svg id="overlapPlot" class="active" viewBox="0 0 1000 1000" style="display: none;"></svg>
     <svg id="gridPlot" viewBox="0 0 1000 1000" style="display: none;"></svg>
   </div>
   <div id="sidebar" class="box">
@@ -94,18 +94,15 @@
       </div>
     </div>
     <div id="viz_tab" class="tab_content" style="display: none;">
-      <div id="viz_overlap" class="box radiobox" data-group="viz">
+      <div id="viz_overlap" class="box radiobox active" data-group="viz">
         <h3>Overlap-based</h3>
-        <!-- <div class="button_box">
-          <button id="overlap_visualize">Visualize</button>
-        </div> -->
       </div>
       <div id="viz_grid" class="box radiobox" data-group="viz">
         <h3>Grid-based</h3>
         <div id="viz_grid_params">
           <label for="viz_grid_size">Grid size: </label>
           <span class="sep"></span>
-          <input id="viz_grid_size" type="number" name="viz_grid_size" value="1000">
+          <input id="viz_grid_size" type="number" name="viz_grid_size" value="100">
         </div>
       </div>
       <div id="viz_color" class="box">
@@ -120,6 +117,7 @@
       <div class="button_box">
         <button id="visualize">Visualize</button>
       </div>
+      <div id="tooltip" class="box"></div>
 
     </div>
     <div id="eval_tab" class="tab_content" style="display: none;">

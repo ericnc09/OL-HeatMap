@@ -23,7 +23,7 @@ function load_data_plot(data){
 }
 
 
-function load_overlap_plot(data){
+function load_plot(data, plot_id){
 
   var max_overlap = 0;
   for (var i=0; i<data.regions.length; i++){
@@ -33,7 +33,7 @@ function load_overlap_plot(data){
     }
   }
 
-  var svg = d3.select("#overlapPlot");
+  var svg = d3.select(plot_id);
   svg.attr('data-max-overlap', max_overlap)
 
   svg.selectAll("rect").remove();
@@ -63,15 +63,17 @@ function load_overlap_plot(data){
   data={}
 }
 
-function load_grid_plot(data){}
 
-function set_rect_plot_colors(colorScale){
+function set_plot_colors(colorScale){
 
-  colors = colorScale.colors($('#overlapPlot,#gridPlot')
-    .attr("data-max-overlap"));
+  max_overlap = Math.max($('#overlapPlot').attr("data-max-overlap"),
+    $('#gridPlot').attr("data-max-overlap"));
+  colors = colorScale.colors(max_overlap);
 
-  $('#overlapPlot rect').each(function(){
-    $(this).css("fill", colors[$(this).attr("data-c")-1])
+  colors.unshift("white")
+
+  $('#overlapPlot rect, #gridPlot rect').each(function(){
+    $(this).css("fill", colors[$(this).attr("data-c")])
   })
 
 }

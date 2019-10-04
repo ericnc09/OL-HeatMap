@@ -76,6 +76,16 @@ body {
   padding: 8px;
 }
 
+/* ---- Tooltip ---- */
+#tooltip {
+  display: none;
+  float:left;
+  position: absolute;
+  margin: 20px 0;
+  padding: 10px;
+}
+
+
 /* ==== Evaluation tab elements ==== */
 
 

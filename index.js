@@ -186,6 +186,25 @@ $(document).ready(function() {
     $("#visualize").click()
   }
 
+  // ---- Save dataset ----
+  $("#save").click(function(){
+    var json = JSON.stringify(window.regions, null, 2);
+    var blob = new Blob([json], {type: "application/json"});
+    var url  = URL.createObjectURL(blob);
+
+    var a = document.createElement('a');
+    a.id = "link"
+    a.download    = window.regions.id + ".json";
+    a.href        = url;
+    a.textContent = window.regions.id + ".json";
+
+    $("#save").parent().append($(a))
+    // document.body.appendChild(a)
+
+    // console.log($("#link"))
+    // $("#link").click()
+  })
+
 
   // ==== Visualization tab ====
 

@@ -70,12 +70,6 @@ body {
   text-align: center;
 }
 
-/* ---- Visualization button ---- */
-#viz_tab button {
-  margin: 10px auto;
-  padding: 8px;
-}
-
 /* ---- Tooltip ---- */
 #tooltip {
   display: none;
@@ -203,6 +197,11 @@ input[type=number] {
   margin: 10px;
   border: 2px solid #333;
   box-shadow: 4px 4px #AAA;
+}
+
+.tab_content button {
+  margin: 10px auto;
+  padding: 8px;
 }
 
 button {

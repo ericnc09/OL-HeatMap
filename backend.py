@@ -78,7 +78,7 @@ def visualize():
   eval_grid.construct_rtree()
   eval_results = eval_grid.get_cell_eval(grid_results)
 
-  print(eval_results)
+  # print(eval_results)
 
   return json.dumps({'overlap':overlap_results.to_dict(),
     'grid':grid_results.to_dict(), 'eval': eval_results})

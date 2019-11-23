@@ -1,6 +1,7 @@
-import json
+import json, math
 from bottle import request, get, post, run, static_file, response
 from pprint import pprint
+import networkx as nx 
 
 from overlapGraph.generator import Randoms, RegionGenerator
 from overlapGraph.slig.datastructs import Region, RegionSet, RIGraph, Interval
@@ -62,7 +63,34 @@ def visualize():
   regionset = RegionSet.from_dict(data['regions'])
 
   alg = SLIG(regionset)
-  alg.prepare()
+  alg.sweep()
+  estim_cliques = len(alg.graph.G.edges)**2 / len(regionset.regions)**1.8
+
+  if estim_cliques > 120:
+    response.status = 420
+    return "Too many intersections!"
+
+  intersections = alg.enumerate_all()
+  overlap_results = regionset.copy().merge(intersections)
+
+
+  grid_size = data['grid_size']
+
+  grid = OverlapGrid(regionset, grid_size)
+
+  grid.construct_rtree()
+  grid_results = grid.get_cell_overlaps()
+
+  return json.dumps({'overlap':overlap_results.to_dict(),
+    'grid':grid_results.to_dict()})
+
+@post('/evaluate')
+def evaluate():
+
+  data = json.loads(request.body.read())
+  regionset = RegionSet.from_dict(data['regions'])
+
+  alg = SLIG(regionset)
   alg.sweep()
   intersections = alg.enumerate_all()
   overlap_results = regionset.copy().merge(intersections)
@@ -74,11 +102,7 @@ def visualize():
   grid.construct_rtree()
   grid_results = grid.get_cell_overlaps()
 
-  eval_grid = OverlapGrid(overlap_results, grid_size)
-  eval_grid.construct_rtree()
-  eval_results = eval_grid.get_cell_eval(grid_results)
-
-  # print(eval_results)
+  eval_results = grid.get_cell_evals(alg)
 
   return json.dumps({'overlap':overlap_results.to_dict(),
     'grid':grid_results.to_dict(), 'eval': eval_results})

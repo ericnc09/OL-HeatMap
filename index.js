@@ -15,13 +15,13 @@ $(document).ready(function() {
       if($(this).attr("id") == "data"){
         // if this is the first tab, show data plot
         
-        $("#main svg").hide()
+        $("#main .plot").hide()
         $("#dataPlot").show()
       } else {
         // otherwise show whichever viz plot is active
 
         $("#dataPlot").hide()
-        $("#main svg.active").show()
+        $("#main .plot.active").show()
       }
       $('.'+ $(this).attr('id') + '_plot').addClass("tab_active");
     }
@@ -37,14 +37,86 @@ $(document).ready(function() {
     }
   });
 
+
+  // plot zoom handling
+  const svgContainer = $('#main')
+  const svgPlot = $('.plot')
+  var svgSize = {w: $('#dataPlot').width(), h: $('#dataPlot').height()}
+  var viewBox = {x:0,y:0,w:1000,h:1000}
+  if (window.regions != undefined) {
+    var bounds = window.regions.bounds.factors;
+    viewBox = { x: bounds[0].lower, y: bounds[1].lower,
+                w: bounds[0].upper - bounds[0].lower,
+                h: bounds[1].upper - bounds[1].lower};
+  }
+  svgPlot.attr("viewbox",
+    `${viewBox.x} ${viewBox.y} ${viewBox.w} ${viewBox.h}`)
+  var isPanning = false;
+  var startPoint = {x:0,y:0};
+  var endPoint = {x:0,y:0};;
+  var scale = 1;
+
+  svgContainer.on("mousewheel", function(e) {
+     e.originalEvent.preventDefault();
+     var w = viewBox.w;
+     var h = viewBox.h;
+     var mx = e.originalEvent.x;
+     var my = e.originalEvent.y;
+     var dw = w*(-1)*Math.sign(e.originalEvent.deltaY)*0.05;
+     var dh = h*(-1)*Math.sign(e.originalEvent.deltaY)*0.05;
+     var dx = dw*mx/svgSize.w;
+     var dy = dh*my/svgSize.h;
+     viewBox = {x:viewBox.x+dx,y:viewBox.y+dy,w:viewBox.w-dw,h:viewBox.h-dh};
+     scale = svgSize.w/viewBox.w;
+     svgPlot.attr('viewBox',
+      `${viewBox.x} ${viewBox.y} ${viewBox.w} ${viewBox.h}`);
+  })
+
+
+  svgContainer.on("mousedown", function(e){
+     isPanning = true;
+     startPoint = {x:e.originalEvent.x, y:e.originalEvent.y};   
+  })
+
+  svgContainer.on("mousemove", function(e){
+    if (isPanning){
+      endPoint = {x:e.originalEvent.x, y:e.originalEvent.y};
+      var dx = (startPoint.x - endPoint.x)/scale;
+      var dy = (startPoint.y - endPoint.y)/scale;
+      var movedViewBox = {x:viewBox.x+dx,y:viewBox.y+dy,w:viewBox.w,h:viewBox.h};
+      svgPlot.attr('viewBox',
+        `${movedViewBox.x} ${movedViewBox.y} ${movedViewBox.w} ${movedViewBox.h}`);
+    }
+  })
+
+  svgContainer.on("mouseup", function(e){
+    if (isPanning){ 
+      endPoint = {x:e.originalEvent.x, y:e.originalEvent.y};
+      var dx = (startPoint.x - endPoint.x)/scale;
+      var dy = (startPoint.y - endPoint.y)/scale;
+      viewBox = {x:viewBox.x+dx,y:viewBox.y+dy,w:viewBox.w,h:viewBox.h};
+      svgPlot.attr('viewBox',
+        `${viewBox.x} ${viewBox.y} ${viewBox.w} ${viewBox.h}`);
+      isPanning = false;
+    }
+  })
+
+  svgContainer.on("mouseleave", function(e){
+   isPanning = false;
+  })
+
+
+
   // window resize handling 
   function update_plot_size(){
     plotSize = Math.max(500,
       Math.min($("body").width() - 505, $("body").height()-24));
     $("#main").width(plotSize);
     $("#main").height(plotSize);
-    $("#main svg").width(plotSize);
-    $("#main svg").height(plotSize);
+    $("#main .plot").width(plotSize);
+    $("#main .plot").height(plotSize);
+
+    svgSize = {w: $('#dataPlot').width(), h: $('#dataPlot').height()}
   }
   $(window).resize(update_plot_size)
   update_plot_size()
@@ -52,51 +124,6 @@ $(document).ready(function() {
 
   // ==== Data source tab ====
 
-  // ---- Color scale dropdown ----
-
-  // Initialize
-  var color_scales = {
-    'Scale 1': ['#8cbeff','#001454'],
-    'Scale 2': ['yellow','red']
-  }
-  var i = 1;
-  for (var key in color_scales) {
-    var element = $("<a>" + key + "</a>");
-    element.attr({"id":'viz_scale' + i});
-    element.css({'background-image':'linear-gradient(to right, ' 
-      + color_scales[key][0] + ','
-      + color_scales[key][1] + ')'});
-    element.attr({'data-color1':color_scales[key][0]});
-    element.attr({'data-color2':color_scales[key][1]});
-    $(".dropdown-content").append(element)
-    i++;
-  }
-
-  // Click update
-  function update_color_scale(id){
-    
-    var element = $('#viz_scale .dropbtn');
-    element.css({'background-image': $('#'+id).css('background-image')});
-    element.html($('#'+id).text() + " &#9660;");
-    element.attr({'data-color1': $('#'+id).attr('data-color1'),
-      'data-color2': $('#'+id).attr('data-color2')
-    });
-
-  }
-  $('#viz_scale .dropdown-content a').click(function(){
-    update_color_scale($(this).attr("id"))
-    set_plot_colors(get_color_scale())
-  })
-  update_color_scale("viz_scale1")
-
-  // Retrieve value
-  function get_color_scale(){
-
-    var color1 = $('#viz_scale .dropbtn').attr('data-color1');
-    var color2 = $('#viz_scale .dropbtn').attr('data-color2');
-
-    return chroma.scale([color1,color2]).mode('lch');
-  }
 
   // ---- Distribution choice ----
 
@@ -147,6 +174,11 @@ $(document).ready(function() {
   $("#source_distribution").change(update_distribution);
   update_distribution()
 
+  // Dimension control regenerate
+  $('input[type=radio][name=source_dimension]').change(function(){
+    $("#generate").click()
+  })
+
   // ---- Data generation handling ----
 
   // Get data parameters and post to backend
@@ -164,6 +196,8 @@ $(document).ready(function() {
                  $("#dist_param_4").val()]
     }
 
+    $("#loading").show()
+
     $.post({
       url: "/generate",
       data: JSON.stringify(data),
@@ -174,6 +208,15 @@ $(document).ready(function() {
     });
   });
 
+  // Load data from file
+  $("#source_file_tab").on("change", "input", function(){
+    
+    file = $(this).prop('files')[0]
+    fr = new FileReader();
+    fr.onload = function(){ update_data_plot(JSON.parse(fr.result)) };
+    fr.readAsText(file)
+  })
+
   // Update data plot with results
   function update_data_plot(data){
     
@@ -181,6 +224,7 @@ $(document).ready(function() {
     $("#tabs > li").removeClass("disabled")
 
     window.regions = data;
+    $("#loading").hide()
 
     // Manually trigger data visualization
     $("#visualize").click()
@@ -199,10 +243,6 @@ $(document).ready(function() {
     a.textContent = window.regions.id + ".json";
 
     $("#save").parent().append($(a))
-    // document.body.appendChild(a)
-
-    // console.log($("#link"))
-    // $("#link").click()
   })
 
 
@@ -223,6 +263,53 @@ $(document).ready(function() {
     $("#overlapPlot").hide()
   })
 
+
+  // ---- Color scale dropdown ----
+
+  // Initialize
+  var color_scales = {
+    'Scale 1': ['#8cbeff','#001454'],
+    'Scale 2': ['yellow','red']
+  }
+  var i = 1;
+  for (var key in color_scales) {
+    var element = $("<a>" + key + "</a>");
+    element.attr({"id":'viz_scale' + i});
+    element.css({'background-image':'linear-gradient(to right, ' 
+      + color_scales[key][0] + ','
+      + color_scales[key][1] + ')'});
+    element.attr({'data-color1':color_scales[key][0]});
+    element.attr({'data-color2':color_scales[key][1]});
+    $(".dropdown-content").append(element)
+    i++;
+  }
+
+  // Click update
+  function update_color_scale(id){
+    
+    var element = $('#viz_scale .dropbtn');
+    element.css({'background-image': $('#'+id).css('background-image')});
+    element.html($('#'+id).text() + " &#9660;");
+    element.attr({'data-color1': $('#'+id).attr('data-color1'),
+      'data-color2': $('#'+id).attr('data-color2')
+    });
+
+  }
+  $('#viz_scale .dropdown-content a').click(function(){
+    update_color_scale($(this).attr("id"))
+    set_plot_colors(get_color_scale())
+  })
+  update_color_scale("viz_scale1")
+
+  // Retrieve value
+  function get_color_scale(){
+
+    var color1 = $('#viz_scale .dropbtn').attr('data-color1');
+    var color2 = $('#viz_scale .dropbtn').attr('data-color2');
+
+    return chroma.scale([color1,color2]).mode('lch');
+  }
+
   // Get visualization parameters and post to backend
   $("#visualize").click(function(){
     
@@ -230,11 +317,20 @@ $(document).ready(function() {
       'regions': window.regions,
       'grid_size': $("#viz_grid_size").val()}
 
+    $("#loading").show()
+
     $.post({
       url: "/visualize",
       data: JSON.stringify(data),
       success: update_viz_plot,
-      error: function(error){alert(error.responseText);},
+      error: function(error){
+        if (error.status == 420) {
+          alert("Too many intersections!\n"
+            + "Perhaps try fewer objects or a sparser distribution.");
+        } else {
+          alert(error.responseText);
+        }
+        $("#loading").hide()},
       contentType: 'application/json',
       dataType: "json"
     });
@@ -248,35 +344,75 @@ $(document).ready(function() {
     set_plot_colors(get_color_scale())
     assign_rect_handlers()
 
-    $("#eval_tab").text(data['eval'])
+    $("#overlap_count")
+      .text(data['overlap'].regions.length - window.regions.regions.length)
+    $("#eval_button").show()
+    $("#eval_results").hide()
+    $("#loading").hide()
   }
 
   // Assign mouse hover event handlers to plot rects for tooltip 
   function assign_rect_handlers(){
    
     // tooltip handling
-    $("#overlapPlot rect, #gridPlot rect").hover(function(){
+    $(".plot rect").hover(function(){
       // when mousing over rectangle
-      $("#tooltip").html(
-        "<b>Details:</b>"
+      html = "<b>Details:</b>"
+        + "<br>id: " + $(this).attr("data-id")
         + "<br>x: " + Number.parseFloat($(this).attr("x")).toFixed(2)
         + "<br>y: " + Number.parseFloat($(this).attr("y")).toFixed(2)
-        + "<br>width: " + Number.parseFloat($(this).attr("width")).toFixed(2)
-        + "<br>height: " + Number.parseFloat($(this).attr("height")).toFixed(2)
-        + "<br>overlaps: " + $(this).attr("data-c"))
-      $("#tooltip").show()
+        + "<br>width: "+Number.parseFloat($(this).attr("width")).toFixed(2)
+        + "<br>height: "+Number.parseFloat($(this).attr("height")).toFixed(2)
+      
+      if ($(this)[0].hasAttribute("data-c")) {
+        html += "<br>overlaps: " + $(this).attr("data-c")
+        + "<br>originals: " + $(this).attr("data-originals")
+      }
+        
+      $(".tooltip").html(html)
+      $(".tooltip").show()
     }, function(){
       // when mouse leaving rectangle
-      $("#tooltip").hide()
+      $(".tooltip").hide()
     })
   }
 
-  // ==== Evaluation tab ====
+  // ==== Evaluation button ====
 
 
+  // Get visualization parameters and post to backend
+  $("#evaluate").click(function(){
 
+    var data = {
+      'regions': window.regions,
+      'grid_size': $("#viz_grid_size").val()}
 
-  
+    $("#loading").show()
+
+    $.post({
+      url: "/evaluate",
+      data: JSON.stringify(data),
+      success: function(data){
+        $("#eval_cells").text(Math.round(data['eval'][0]*10000)/100)
+        $("#eval_area").text(Math.round(data['eval'][1]*10000)/100)
+        $("#eval_button").hide()
+        $("#eval_results").show()
+        $("#loading").hide()
+      },
+      error: function(error){
+        if (error.status == 420) {
+          alert("Too many intersections!\n\
+            Perhaps try fewer objects or a sparser distribution.");
+        } else {
+          alert(error.responseText);
+        }
+        $("#loading").hide()},
+      contentType: 'application/json',
+      dataType: "json"
+    });
+
+  })
+
 
 
   // Manually trigger data generation

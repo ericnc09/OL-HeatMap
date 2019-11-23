@@ -9,10 +9,28 @@ function load_data_plot(data){
     .enter()
     .append("rect");
 
+  if (data.dimension == 1) {
+
+    // data.regions.sort(function(x, y){
+    //    return d3.ascending(x.factors[0].lower, y.factors[0].lower);
+    // })
+
+    var total_height = (data.bounds.factors[0].upper
+      - data.bounds.factors[0].lower)
+    var rect_height = (total_height / data.regions.length) - 1
+    for (var i = 0; i < data.regions.length; i++){
+      data.regions[i].factors.push({
+        'lower': total_height - (i + (i + 1) * rect_height),
+        'upper': total_height - (i + i * rect_height)})
+    }
+  
+  } 
+
   var rectAttributes = rects
+    .attr("data-id", function(r){ return r.id;})
     .attr("x", function(r) {
       return r.factors[0].lower;} )
-    .attr("y", function (r){return r.factors[1].upper;})
+    .attr("y", function (r){return r.factors[1].lower;})
     .attr("width", function(r) {
       return r.factors[0].upper - r.factors[0].lower;})
     .attr("height", function(r){
@@ -20,6 +38,12 @@ function load_data_plot(data){
     .attr("fill-opacity", 0)
     .attr("stroke", "black")
     .attr("stroke-width", 1.5)
+
+  if (data.dimension == 1) {
+    for (var i = 0; i < data.regions.length; i++){
+      data.regions[i].factors.pop()
+    }
+  }
 }
 
 
@@ -43,22 +67,31 @@ function load_plot(data, plot_id){
     .enter()
     .append("rect");
 
-  if (data.dimension == 2) {
+  if (data.dimension == 1) {
 
-    var rectAttributes = rects
-      .attr("x", function(r) {
-        return r.factors[0].lower;} )
-      .attr("y", function (r){return r.factors[1].upper;})
-      .attr("width", function(r) {
-        return r.factors[0].upper - r.factors[0].lower;})
-      .attr("height", function(r){
-        return r.factors[1].upper - r.factors[1].lower;})
-      .attr("z-index", function (r){return r.originals.length;})
-      /*.call(d3.zoom().on("zoom", function(){
-          svg.attr("transform",d3.event.transform)
-      }))*/
-      .attr("data-c", function (r){return r.originals.length;})
+    var total_height = (data.bounds.factors[0].upper
+      - data.bounds.factors[0].lower)
+
+    for (var i = 0; i < data.regions.length; i++){
+      data.regions[i].factors.push({
+        'lower': (total_height / 2) - 30,
+        'upper': (total_height / 2) + 30})
+    }
+  
   }
+  var rectAttributes = rects
+    .attr("data-id", function(r){ return r.id;})
+    .attr("data-originals", function(r){ return r.originals.join("<br>");})
+    .attr("x", function(r) {
+      return r.factors[0].lower;} )
+    .attr("y", function (r){return r.factors[1].lower;})
+    .attr("width", function(r) {
+      return r.factors[0].upper - r.factors[0].lower;})
+    .attr("height", function(r){
+      return r.factors[1].upper - r.factors[1].lower;})
+    .attr("z-index", function (r){return r.originals.length;})
+    .attr("data-c", function (r){return r.originals.length;})
+  
   // cleanup for faster garbage disposal
   data={}
 }
@@ -66,14 +99,38 @@ function load_plot(data, plot_id){
 
 function set_plot_colors(colorScale){
 
-  max_overlap = Math.max($('#overlapPlot').attr("data-max-overlap"),
-    $('#gridPlot').attr("data-max-overlap"));
-  colors = colorScale.colors(max_overlap);
+  var overlapMax = $('#overlapPlot').attr("data-max-overlap")
+  var gridMax = $('#gridPlot').attr("data-max-overlap")
 
-  colors.unshift("white")
+  // if extreme difference in max overlaps, set scales separately
+  if (gridMax > overlapMax * 10) {
 
-  $('#overlapPlot rect, #gridPlot rect').each(function(){
-    $(this).css("fill", colors[$(this).attr("data-c")])
-  })
+    colors = colorScale.colors(overlapMax);
+    colors.unshift("white")
+    
+    $('#overlapPlot rect').each(function(){
+      $(this).css("fill", colors[$(this).attr("data-c")])
+    })
+
+    colors = colorScale.colors(gridMax);
+    colors.unshift("white")
+    
+    $('#gridPlot rect').each(function(){
+      $(this).css("fill", colors[$(this).attr("data-c")])
+    })
+  
+  // otherwise set the maximum scale
+  } else {
+
+    max_overlap = Math.max(overlapMax, gridMax);
+    colors = colorScale.colors(max_overlap);
+
+    colors.unshift("white")
+
+    $('#overlapPlot rect, #gridPlot rect').each(function(){
+      $(this).css("fill", colors[$(this).attr("data-c")])
+    })
+  }
+  
 
 }

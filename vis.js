@@ -60,8 +60,11 @@ function load_plot(data, plot_id){
   var svg = d3.select(plot_id);
   svg.attr('data-max-overlap', max_overlap)
 
-  svg.selectAll("rect").remove();
+  data.regions.sort(function(a, b){
+    return a.originals.length - b.originals.length
+  })
 
+  svg.selectAll("rect").remove();
   var rects = svg.selectAll("rects")
     .data(data.regions)
     .enter()

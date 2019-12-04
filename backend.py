@@ -1,7 +1,6 @@
 import json, math
 from bottle import request, get, post, run, static_file, response
 from pprint import pprint
-import networkx as nx 
 
 from overlapGraph.generator import Randoms, RegionGenerator
 from overlapGraph.slig.datastructs import Region, RegionSet, RIGraph, Interval
@@ -36,13 +35,13 @@ def generate():
     posnrng = Randoms.uniform()
 
   elif params['posnrng'] == "gauss" and len(rng_params) >= 2:
-    posnrng = Randoms.gauss(*rng_params[:1])
+    posnrng = Randoms.gauss(*rng_params[:2])
 
   elif params['posnrng'] == "triangular" and len(rng_params) >= 1:
     posnrng = Randoms.triangular(rng_params[0])
 
   elif params['posnrng'] == "bimodal" and len(rng_params) >= 4:
-    posnrng = Randoms.bimodal(*rng_params[:3])
+    posnrng = Randoms.bimodal(*rng_params[:4])
 
   else:
     response.status = 400
@@ -66,13 +65,12 @@ def visualize():
   alg.sweep()
   estim_cliques = len(alg.graph.G.edges)**2 / len(regionset.regions)**1.8
 
-  if estim_cliques > 120:
+  if estim_cliques > 140:
     response.status = 420
     return "Too many intersections!"
 
-  intersections = alg.enumerate_all()
+  intersections = alg.enumerate_visible()
   overlap_results = regionset.copy().merge(intersections)
-
 
   grid_size = data['grid_size']
 
@@ -84,6 +82,7 @@ def visualize():
   return json.dumps({'overlap':overlap_results.to_dict(),
     'grid':grid_results.to_dict()})
 
+
 @post('/evaluate')
 def evaluate():
 
@@ -93,7 +92,8 @@ def evaluate():
   alg = SLIG(regionset)
   alg.sweep()
   intersections = alg.enumerate_all()
-  overlap_results = regionset.copy().merge(intersections)
+  cover_intersections = alg.enumerate_visible()
+  count_results = (len(intersections), len(cover_intersections))
 
   grid_size = data['grid_size']
 
@@ -104,8 +104,7 @@ def evaluate():
 
   eval_results = grid.get_cell_evals(alg)
 
-  return json.dumps({'overlap':overlap_results.to_dict(),
-    'grid':grid_results.to_dict(), 'eval': eval_results})
+  return json.dumps({'eval': eval_results, 'count': count_results})
 
 
 run(host='0.0.0.0', port=8080, debug=True, reloader=True)

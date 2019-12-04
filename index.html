@@ -100,7 +100,6 @@
     <div id="viz_tab" class="tab_content" style="display: none;">
       <div id="viz_overlap" class="box radiobox active" data-group="viz">
         <h3>OL-HeatMap</h3>
-        <div><span>Overlaps: </span><span id="overlap_count"></span></div>
       </div>
       <div id="viz_grid" class="box radiobox" data-group="viz">
         <h3>Grid-based</h3>
@@ -126,6 +125,14 @@
         <button id="evaluate">Evaluate</button>
       </div>
       <div class="box" id="eval_results">
+        <h3>Overlap Counts</h3>
+        <div>
+          <span>All Overlaps: </span><span id="overlap_count"></span>
+        </div>
+        <div>
+          <span>Visible Overlaps: </span><span id="cover_count"></span>
+        </div>
+        <h3></h3>
         <h3>Grid Accuracy Evaluation</h3>
         <div>
           <span>Accurate cells: </span><span id="eval_cells"></span><span> %</span>

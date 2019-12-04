@@ -344,8 +344,6 @@ $(document).ready(function() {
     set_plot_colors(get_color_scale())
     assign_rect_handlers()
 
-    $("#overlap_count")
-      .text(data['overlap'].regions.length - window.regions.regions.length)
     $("#eval_button").show()
     $("#eval_results").hide()
     $("#loading").hide()
@@ -393,6 +391,8 @@ $(document).ready(function() {
       url: "/evaluate",
       data: JSON.stringify(data),
       success: function(data){
+        $("#overlap_count").text(data['count'][0])
+        $("#cover_count").text(data['count'][1])
         $("#eval_cells").text(Math.round(data['eval'][0]*10000)/100)
         $("#eval_area").text(Math.round(data['eval'][1]*10000)/100)
         $("#eval_button").hide()

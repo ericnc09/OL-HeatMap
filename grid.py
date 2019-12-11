@@ -21,23 +21,25 @@ class OverlapGrid(object):
 
     if self.regionset.dimension == 1:
 
-      cell_width=(bounds[0].upper - bounds[0].lower)/self.size
+      # negligibly adjust cell width to prevent floating point errors
+      cell_width=(bounds[0].upper - bounds[0].lower)/(self.size*1.000001)
       cells = []
 
       #The two for loops are essentially x and y. They create the grid
       #based on the formula of these two things right here
       for i in range(self.size):
         new_cell = Region(id="cell_{}".format(i),
-          lower=[cell_width * i],
-          upper=[cell_width * (i + 1)])
+          lower=[bounds[0].lower + cell_width * i],
+          upper=[bounds[0].lower + cell_width * (i + 1)])
         cells.append(new_cell)
       
       return cells
 
     else:
       
-      cell_width=(bounds[0].upper - bounds[0].lower)/self.size
-      cell_height=(bounds[1].upper - bounds[1].lower)/self.size
+      # negligibly adjust cell width to prevent floating point errors
+      cell_width=(bounds[0].upper - bounds[0].lower)/(self.size*1.000001)
+      cell_height=(bounds[1].upper - bounds[1].lower)/(self.size*1.000001)
 
       cells = []
 
@@ -46,8 +48,10 @@ class OverlapGrid(object):
       for i in range(self.size):
         for j in range(self.size):
           new_cell = Region(id="cell_{}_{}".format(i,j),
-            lower=[cell_width * i, cell_height * j],
-            upper=[cell_width * (i + 1), cell_height * (j + 1)])
+            lower=[bounds[0].lower + cell_width * i,
+                   bounds[1].lower +  cell_height * j],
+            upper=[bounds[0].lower + cell_width * (i + 1),
+                   bounds[1].lower + cell_height * (j + 1)])
           cells.append(new_cell)
       
       return cells
@@ -87,7 +91,8 @@ class OverlapGrid(object):
   def get_cell_overlaps(self):
     """Get the overlap value of each cell"""
     
-    self.grid_set = RegionSet(bounds=self.regionset.bounds)
+    self.grid_set = RegionSet(id=self.regionset.id + "_grid",
+      bounds=self.regionset.bounds)
 
     for cell in self.cells:
 

@@ -9,6 +9,15 @@ function load_data_plot(data){
     .enter()
     .append("rect");
 
+  if (data.id.includes("US")) {
+    svg.selectAll("image")
+      .attr("display", "inherit")
+      .attr("y", data.bounds.factors[1].upper - 49.7)
+  } else {
+    svg.selectAll("image")
+      .attr("display", "none")
+  }
+
   if (data.dimension == 1) {
 
     // data.regions.sort(function(x, y){
@@ -26,18 +35,22 @@ function load_data_plot(data){
   
   } 
 
+  var width = data.bounds.factors[0].upper - data.bounds.factors[0].lower
+
   var rectAttributes = rects
     .attr("data-id", function(r){ return r.id;})
+    .attr("data-y", function(r){ return r.factors[1].lower;})
     .attr("x", function(r) {
       return r.factors[0].lower;} )
-    .attr("y", function (r){return r.factors[1].lower;})
+    .attr("y", function (r){
+      return data.bounds.factors[1].upper - r.factors[1].upper;})
     .attr("width", function(r) {
       return r.factors[0].upper - r.factors[0].lower;})
     .attr("height", function(r){
       return r.factors[1].upper - r.factors[1].lower;})
     .attr("fill-opacity", 0)
     .attr("stroke", "black")
-    .attr("stroke-width", 1.5)
+    .attr("stroke-width", 0.001 * width)
 
   if (data.dimension == 1) {
     for (var i = 0; i < data.regions.length; i++){
@@ -64,6 +77,16 @@ function load_plot(data, plot_id){
     return a.originals.length - b.originals.length
   })
 
+
+  if (data.id.includes("US")) {
+    svg.selectAll("image")
+      .attr("display", "inherit")
+      .attr("y", data.bounds.factors[1].upper - 49.7)
+  } else {
+    svg.selectAll("image")
+      .attr("display", "none")
+  }
+
   svg.selectAll("rect").remove();
   var rects = svg.selectAll("rects")
     .data(data.regions)
@@ -75,6 +98,7 @@ function load_plot(data, plot_id){
     var total_height = (data.bounds.factors[0].upper
       - data.bounds.factors[0].lower)
 
+
     for (var i = 0; i < data.regions.length; i++){
       data.regions[i].factors.push({
         'lower': (total_height / 2) - 30,
@@ -82,12 +106,15 @@ function load_plot(data, plot_id){
     }
   
   }
+
   var rectAttributes = rects
     .attr("data-id", function(r){ return r.id;})
+    .attr("data-y", function(r){ return r.factors[1].lower;})
     .attr("data-originals", function(r){ return r.originals.join("<br>");})
     .attr("x", function(r) {
       return r.factors[0].lower;} )
-    .attr("y", function (r){return r.factors[1].lower;})
+    .attr("y", function (r){
+      return data.bounds.factors[1].upper - r.factors[1].upper;})
     .attr("width", function(r) {
       return r.factors[0].upper - r.factors[0].lower;})
     .attr("height", function(r){
@@ -97,6 +124,12 @@ function load_plot(data, plot_id){
   
   // cleanup for faster garbage disposal
   data={}
+
+  if (data.dimension == 1) {
+    for (var i = 0; i < data.regions.length; i++){
+      data.regions[i].factors.pop()
+    }
+  }
 }
 
 
@@ -109,17 +142,17 @@ function set_plot_colors(colorScale){
   if (gridMax > overlapMax * 10) {
 
     colors = colorScale.colors(overlapMax);
-    colors.unshift("white")
+    colors.unshift("rgba(255, 255, 255, 0)")
     
     $('#overlapPlot rect').each(function(){
-      $(this).css("fill", colors[$(this).attr("data-c")])
+      $(this).attr("fill", colors[$(this).attr("data-c")])
     })
 
     colors = colorScale.colors(gridMax);
-    colors.unshift("white")
+    colors.unshift("rgba(255, 255, 255, 0)")
     
     $('#gridPlot rect').each(function(){
-      $(this).css("fill", colors[$(this).attr("data-c")])
+      $(this).attr("fill", colors[$(this).attr("data-c")])
     })
   
   // otherwise set the maximum scale
@@ -128,12 +161,10 @@ function set_plot_colors(colorScale){
     max_overlap = Math.max(overlapMax, gridMax);
     colors = colorScale.colors(max_overlap);
 
-    colors.unshift("white")
+    colors.unshift("rgba(255, 255, 255, 0)")
 
     $('#overlapPlot rect, #gridPlot rect').each(function(){
-      $(this).css("fill", colors[$(this).attr("data-c")])
+      $(this).attr("fill", colors[$(this).attr("data-c")])
     })
   }
-  
-
 }

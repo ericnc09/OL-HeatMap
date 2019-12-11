@@ -11,19 +11,23 @@ from grid import OverlapGrid
 # starting screen
 @get('/')
 def home():
-  return static_file('index.html', root=".")
+  return static_file('static/index.html', root=".")
 
 @get('/home.css')
 def get_css():
-  return static_file('home.css', root=".")
+  return static_file('static/home.css', root=".")
 
 @get('/index.js')
 def get_js():
-  return static_file('index.js', root=".")
+  return static_file('static/index.js', root=".")
 
 @get('/vis.js')
 def get_vis_js():
-  return static_file('vis.js', root=".")
+  return static_file('static/vis.js', root=".")
+
+@get('/us_map.png')
+def get_us_map():
+  return static_file('static/us_map.png', root=".")
 
 @post('/generate')
 def generate():
@@ -59,6 +63,9 @@ def generate():
 @post('/visualize')
 def visualize():
   data = json.loads(request.body.read())
+  if (data['regions']['dimension'] == 1
+    and len(data['regions']['bounds']['factors']) > 1):
+    data['regions']['bounds']['factors'].pop()
   regionset = RegionSet.from_dict(data['regions'])
 
   alg = SLIG(regionset)
@@ -87,6 +94,9 @@ def visualize():
 def evaluate():
 
   data = json.loads(request.body.read())
+  if (data['regions']['dimension'] == 1
+    and len(data['regions']['bounds']['factors']) > 1):
+    data['regions']['bounds']['factors'].pop()
   regionset = RegionSet.from_dict(data['regions'])
 
   alg = SLIG(regionset)

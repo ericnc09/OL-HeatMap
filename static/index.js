@@ -38,72 +38,76 @@ $(document).ready(function() {
   });
 
 
-  // plot zoom handling
-  const svgContainer = $('#main')
-  const svgPlot = $('.plot')
-  var svgSize = {w: $('#dataPlot').width(), h: $('#dataPlot').height()}
-  var viewBox = {x:0,y:0,w:1000,h:1000}
-  if (window.regions != undefined) {
-    var bounds = window.regions.bounds.factors;
-    viewBox = { x: bounds[0].lower, y: bounds[1].lower,
-                w: bounds[0].upper - bounds[0].lower,
-                h: bounds[1].upper - bounds[1].lower};
-  }
-  svgPlot.attr("viewbox",
-    `${viewBox.x} ${viewBox.y} ${viewBox.w} ${viewBox.h}`)
-  var isPanning = false;
-  var startPoint = {x:0,y:0};
-  var endPoint = {x:0,y:0};;
-  var scale = 1;
+  function handleZoom(){
 
-  svgContainer.on("mousewheel", function(e) {
-     e.originalEvent.preventDefault();
-     var w = viewBox.w;
-     var h = viewBox.h;
-     var mx = e.originalEvent.x;
-     var my = e.originalEvent.y;
-     var dw = w*(-1)*Math.sign(e.originalEvent.deltaY)*0.05;
-     var dh = h*(-1)*Math.sign(e.originalEvent.deltaY)*0.05;
-     var dx = dw*mx/svgSize.w;
-     var dy = dh*my/svgSize.h;
-     viewBox = {x:viewBox.x+dx,y:viewBox.y+dy,w:viewBox.w-dw,h:viewBox.h-dh};
-     scale = svgSize.w/viewBox.w;
-     svgPlot.attr('viewBox',
-      `${viewBox.x} ${viewBox.y} ${viewBox.w} ${viewBox.h}`);
-  })
-
-
-  svgContainer.on("mousedown", function(e){
-     isPanning = true;
-     startPoint = {x:e.originalEvent.x, y:e.originalEvent.y};   
-  })
-
-  svgContainer.on("mousemove", function(e){
-    if (isPanning){
-      endPoint = {x:e.originalEvent.x, y:e.originalEvent.y};
-      var dx = (startPoint.x - endPoint.x)/scale;
-      var dy = (startPoint.y - endPoint.y)/scale;
-      var movedViewBox = {x:viewBox.x+dx,y:viewBox.y+dy,w:viewBox.w,h:viewBox.h};
-      svgPlot.attr('viewBox',
-        `${movedViewBox.x} ${movedViewBox.y} ${movedViewBox.w} ${movedViewBox.h}`);
+    // plot zoom handling
+    const svgContainer = $('#main')
+    const svgPlot = $('.plot')
+    var svgSize = {w: $('#dataPlot').width(), h: $('#dataPlot').height()}
+    var viewBox = {x:0,y:0,w:1000,h:1000}
+    if (window.regions != undefined) {
+      var bounds = window.regions.bounds.factors;
+      viewBox = { x: bounds[0].lower, y: 0,
+                  w: bounds[0].upper - bounds[0].lower,
+                  h: bounds[1].upper - bounds[1].lower};
     }
-  })
+    svgPlot.attr("viewBox",
+      `${viewBox.x} ${viewBox.y} ${viewBox.w} ${viewBox.h}`)
+    var isPanning = false;
+    var startPoint = {x:0,y:0};
+    var endPoint = {x:0,y:0};;
+    var scale = svgSize.w/viewBox.w;
 
-  svgContainer.on("mouseup", function(e){
-    if (isPanning){ 
-      endPoint = {x:e.originalEvent.x, y:e.originalEvent.y};
-      var dx = (startPoint.x - endPoint.x)/scale;
-      var dy = (startPoint.y - endPoint.y)/scale;
-      viewBox = {x:viewBox.x+dx,y:viewBox.y+dy,w:viewBox.w,h:viewBox.h};
-      svgPlot.attr('viewBox',
+    svgContainer.on("mousewheel", function(e) {
+       e.originalEvent.preventDefault();
+       var w = viewBox.w;
+       var h = viewBox.h;
+       var mx = e.originalEvent.x;
+       var my = e.originalEvent.y;
+       var dw = w*(-1)*Math.sign(e.originalEvent.deltaY)*0.05;
+       var dh = h*(-1)*Math.sign(e.originalEvent.deltaY)*0.05;
+       var dx = dw*mx/svgSize.w;
+       var dy = dh*my/svgSize.h;
+       viewBox = {x:viewBox.x+dx,y:viewBox.y+dy,w:viewBox.w-dw,h:viewBox.h-dh};
+       scale = svgSize.w/viewBox.w;
+       svgPlot.attr('viewBox',
         `${viewBox.x} ${viewBox.y} ${viewBox.w} ${viewBox.h}`);
-      isPanning = false;
-    }
-  })
+    })
 
-  svgContainer.on("mouseleave", function(e){
-   isPanning = false;
-  })
+
+    svgContainer.on("mousedown", function(e){
+       isPanning = true;
+       startPoint = {x:e.originalEvent.x, y:e.originalEvent.y};   
+    })
+
+    svgContainer.on("mousemove", function(e){
+      if (isPanning){
+        endPoint = {x:e.originalEvent.x, y:e.originalEvent.y};
+        var dx = (startPoint.x - endPoint.x)/scale;
+        var dy = (startPoint.y - endPoint.y)/scale;
+        var movedViewBox = {x:viewBox.x+dx,y:viewBox.y+dy,w:viewBox.w,h:viewBox.h};
+        svgPlot.attr('viewBox',
+          `${movedViewBox.x} ${movedViewBox.y} ${movedViewBox.w} ${movedViewBox.h}`);
+      }
+    })
+
+    svgContainer.on("mouseup", function(e){
+      if (isPanning){ 
+        endPoint = {x:e.originalEvent.x, y:e.originalEvent.y};
+        var dx = (startPoint.x - endPoint.x)/scale;
+        var dy = (startPoint.y - endPoint.y)/scale;
+        viewBox = {x:viewBox.x+dx,y:viewBox.y+dy,w:viewBox.w,h:viewBox.h};
+        svgPlot.attr('viewBox',
+          `${viewBox.x} ${viewBox.y} ${viewBox.w} ${viewBox.h}`);
+        isPanning = false;
+      }
+    })
+
+    svgContainer.on("mouseleave", function(e){
+     isPanning = false;
+    })
+  }
+  handleZoom()
 
 
 
@@ -220,10 +224,20 @@ $(document).ready(function() {
   // Update data plot with results
   function update_data_plot(data){
     
+    $("#loading").show()
+
+    if (data.dimension == 1 && data.bounds.factors.length == 1) {
+      var total_height = (data.bounds.factors[0].upper
+        - data.bounds.factors[0].lower)
+      data.bounds.factors.push({ 'lower': 0, 'upper': total_height})
+    }
+
     load_data_plot(data)
     $("#tabs > li").removeClass("disabled")
 
     window.regions = data;
+    assign_rect_handlers()
+    handleZoom()
     $("#loading").hide()
 
     // Manually trigger data visualization
@@ -232,6 +246,7 @@ $(document).ready(function() {
 
   // ---- Save dataset ----
   $("#save").click(function(){
+
     var json = JSON.stringify(window.regions, null, 2);
     var blob = new Blob([json], {type: "application/json"});
     var url  = URL.createObjectURL(blob);
@@ -312,7 +327,7 @@ $(document).ready(function() {
 
   // Get visualization parameters and post to backend
   $("#visualize").click(function(){
-    
+
     var data = {
       'regions': window.regions,
       'grid_size': $("#viz_grid_size").val()}
@@ -338,6 +353,16 @@ $(document).ready(function() {
 
   // Update visualization plots with results
   function update_viz_plot(data){
+
+    if (data['overlap'].dimension == 1
+      && data['overlap'].bounds.factors.length == 1) {
+
+      var total_height = (data['overlap'].bounds.factors[0].upper
+        - data['overlap'].bounds.factors[0].lower)
+
+      data['overlap'].bounds.factors.push({'lower': 0, 'upper': total_height})
+      data['grid'].bounds.factors.push({'lower': 0, 'upper': total_height})
+    }
     
     load_plot(data['overlap'], "#overlapPlot")
     load_plot(data['grid'], "#gridPlot")
@@ -358,7 +383,7 @@ $(document).ready(function() {
       html = "<b>Details:</b>"
         + "<br>id: " + $(this).attr("data-id")
         + "<br>x: " + Number.parseFloat($(this).attr("x")).toFixed(2)
-        + "<br>y: " + Number.parseFloat($(this).attr("y")).toFixed(2)
+        + "<br>y: " + Number.parseFloat($(this).attr("data-y")).toFixed(2)
         + "<br>width: "+Number.parseFloat($(this).attr("width")).toFixed(2)
         + "<br>height: "+Number.parseFloat($(this).attr("height")).toFixed(2)
       

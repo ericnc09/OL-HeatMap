@@ -47,6 +47,10 @@ def generate():
   elif params['posnrng'] == "bimodal" and len(rng_params) >= 4:
     posnrng = Randoms.bimodal(*rng_params[:4])
 
+  elif params['posnrng'] == "hotspot" and len(rng_params) >= 5:
+    posnrng = Randoms.hotspot(n=rng_params[0], d=data['regions']['dimension'],
+      *rng_params[2:5])
+
   else:
     response.status = 400
     return 'Invalid distribution parameters!'

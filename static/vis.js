@@ -139,7 +139,7 @@ function set_plot_colors(colorScale){
   var gridMax = $('#gridPlot').attr("data-max-overlap")
 
   // if extreme difference in max overlaps, set scales separately
-  if (gridMax > overlapMax * 10) {
+  if (gridMax > overlapMax * 5) {
 
     colors = colorScale.colors(overlapMax);
     colors.unshift("rgba(255, 255, 255, 0)")

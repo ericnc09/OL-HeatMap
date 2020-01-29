@@ -141,6 +141,7 @@ $(document).ready(function() {
         $("#dist_param_2").parent().css('visibility', 'hidden');
         $("#dist_param_3").parent().css('visibility', 'hidden');
         $("#dist_param_4").parent().css('visibility', 'hidden');
+        $("#dist_param_5").parent().css('visibility', 'hidden');
       break;
       case "gauss":
         $("label[for='dist_param_1']").text("Mean:");
@@ -151,6 +152,7 @@ $(document).ready(function() {
         $("#dist_param_2").parent().css('visibility', 'visible');
         $("#dist_param_3").parent().css('visibility', 'hidden');
         $("#dist_param_4").parent().css('visibility', 'hidden');
+        $("#dist_param_5").parent().css('visibility', 'hidden');
       break;
       case "triangular":
         $("label[for='dist_param_1']").text("Mode:");
@@ -160,6 +162,7 @@ $(document).ready(function() {
         $("#dist_param_2").parent().css('visibility', 'hidden');
         $("#dist_param_3").parent().css('visibility', 'hidden');
         $("#dist_param_4").parent().css('visibility', 'hidden');
+        $("#dist_param_5").parent().css('visibility', 'hidden');
       break;
       case "bimodal":
         $("label[for='dist_param_1']").text("1st Mean:");
@@ -172,6 +175,21 @@ $(document).ready(function() {
         $("#dist_param_2").parent().css('visibility', 'visible');
         $("#dist_param_3").parent().css('visibility', 'visible');
         $("#dist_param_4").parent().css('visibility', 'visible');
+        $("#dist_param_5").parent().css('visibility', 'hidden');
+      break;
+      case "hotspot":
+        $("label[for='dist_param_1']").text("Hotspots:");
+        $("label[for='dist_param_2']").text("Min Mean:");
+        $("label[for='dist_param_3']").text("Max Mean:");
+        $("label[for='dist_param_4']").text("Min Sigma:");
+        $("label[for='dist_param_5']").text("Max Sigma:");
+        $("#no_param").hide();
+        $("#dist_param_1").show();
+        $("#dist_param_1").parent().css('visibility', 'visible');
+        $("#dist_param_2").parent().css('visibility', 'visible');
+        $("#dist_param_3").parent().css('visibility', 'visible');
+        $("#dist_param_4").parent().css('visibility', 'visible');
+        $("#dist_param_5").parent().css('visibility', 'visible');
       break;
     }
   }
@@ -284,30 +302,33 @@ $(document).ready(function() {
   // Initialize
   var color_scales = {
     'Scale 1': ['#8cbeff','#001454'],
-    'Scale 2': ['yellow','red']
+    'Scale 2': ['yellow','red'],
+    'Scale 3': ['#ADD8E6','#66CDAA', 'yellow', 'orange', 'red']
   }
   var i = 1;
   for (var key in color_scales) {
     var element = $("<a>" + key + "</a>");
     element.attr({"id":'viz_scale' + i});
-    element.css({'background-image':'linear-gradient(to right, ' 
-      + color_scales[key][0] + ','
-      + color_scales[key][1] + ')'});
-    element.attr({'data-color1':color_scales[key][0]});
-    element.attr({'data-color2':color_scales[key][1]});
+    var gradient = 'linear-gradient(to right, '
+    gradient += color_scales[key][0] 
+    for (var j = 0; j < color_scales[key].length; j++) {
+      gradient += ',' + color_scales[key][j]
+    }
+    gradient += ')'
+    element.css({'background-image':gradient});
+    element.attr({'data-scale':key});
     $(".dropdown-content").append(element)
     i++;
   }
 
   // Click update
   function update_color_scale(id){
+    console.log(id)
     
     var element = $('#viz_scale .dropbtn');
     element.css({'background-image': $('#'+id).css('background-image')});
     element.html($('#'+id).text() + " &#9660;");
-    element.attr({'data-color1': $('#'+id).attr('data-color1'),
-      'data-color2': $('#'+id).attr('data-color2')
-    });
+    element.attr({'data-scale': $('#'+id).attr('data-scale')});
 
   }
   $('#viz_scale .dropdown-content a').click(function(){
@@ -319,10 +340,9 @@ $(document).ready(function() {
   // Retrieve value
   function get_color_scale(){
 
-    var color1 = $('#viz_scale .dropbtn').attr('data-color1');
-    var color2 = $('#viz_scale .dropbtn').attr('data-color2');
+    var scale = $('#viz_scale .dropbtn').attr('data-scale');
 
-    return chroma.scale([color1,color2]).mode('lch');
+    return chroma.scale(color_scales[scale]).mode('lch');
   }
 
   // Get visualization parameters and post to backend

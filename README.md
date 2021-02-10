@@ -10,29 +10,25 @@ As this is a private project, I am gonna write some more stuff here. Mostly to h
 This has two parts, they are disconnected and often connected at the same time. First part is Algorithms used and from where. Second part is about the visualization operations done on them.
 
 ### Algorithms and Libraries
-This part has two libraries used so far. It uses Tilemachos's [his github link] for the SLOT algorithm which creates the data of the visualization that we have. 
+This part has two libraries used so far. It uses Tilemachos's [his github link] for the SLIG algorithm which creates the data of the visualization that we have. 
 
-**Functions used:** Still not done yet as the code is still under reconstruction.
 
-The second library is called rbush. This is an implementation of the rtree algorithm which we used to create the intersection test for our naive approach on grids. We used the functions `tree.search()` to find the intersections of these rectangles with the grid rectangles. Grid has been described below. The output is stored into data format for d3 processing afterwards.
 
 ### D3 Visualization
 
-We have extensively used D3 to make visualization of the values we receive from both of the previous methods. The methods we have used here is, `d3.JSON()`, to put the data inside the d3 format. `load_graphics` is our main visualization function right now. None of the others work, they are incomplete in most cases, in some cases I have not clearly figured everything out. They will be removed as our main code progresses. 
+The front-end is responsible for the actual heat-map visualization and all in-teraction with the user. It is implemented in HTML, CSS and JavaScript, makinguse of the Data Driven Documents (D3) and JQuery JavaScript libraries for visual-ization and for communication with the back-end, plus other general functionality,respectively. The interface allows the user to generate and store synthetic data-setsby specifying parameter values for the random data generator using form fields, oralternatively loading their own input data. The UI provides a preview of this inputdata, as well as the OL-HEATMAP and grid-based heat-map visualization of over-laps in said data. The grid granularity valueg, as well as the color scale used forthe visualization can also be modified through form fields, while the visualization contains several useful features such as pan/zoom capability and details for eachdata point on hover. Finally, an evaluation of the grid-based approach’s accuracy isdisplayed, including both ACgrid and ASgrid. 
 
-`load_graphics` creates rectangles based on the dataset it receives from the function. The test files, right now contains not too many work, it only has data generated on test purposes. For which it works pretty well. It creates rectangle object, takes in defferent schema, essentially draws on polygon at a time with same opacity. Colour changes due to presence of shades in link with z-index.
+### BackEnd
 
-### JSON Parser
-
-The best part is the parser.
+The dashboard demo is structured as a lightweight WebApp-style application,with a Python Flask-based back-end. The back-end contains the implementation ofthe data generator, as well as theOL-HEATMAP and grid-based algorithms. Forthe grid-based algorithm, a grid is constructed over the input data-set according tothe specified granularity valueg, and each cell’s overlap value is determined usingan r-tree based index, with the help of Python’s Rtree library. Likewise, the overlaprectangles for the OL-HEATMAP method are calculated using the SLIG library.Finally, the results from the two methods are compared to produce the accuracyevaluation score for the grid-based approach, as theOL-HEATMAP method bydefinition produces exact results
 
 
-### Components to be added
+### Components 
 
-This part contains a list of functions which will be added inside the visualization for interactvity purposes. 
+This part contains a list of functions.
 
 - Zoom/ Pan
 - Details on Demand (Retriving Z index upon hovering)
 - Colour Scale initialization using Chroma.js
 - Testing of Real Data-sets
-- Testing Methodology
+

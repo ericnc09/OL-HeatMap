@@ -1,9 +1,7 @@
 # overlappingRect_Viz
 
-Overlapping Rectangle Visualization is a dashboard(in-progress) for visualizing overlapping geometric shapes. The visualization is made out of D3.js (had to be), and the algortihms that we used are made out of different technologies, thus providing optimum performance which made our work easier. 
+Overlapping Rectangle Visualization is a dashboard for visualizing overlapping geometric shapes. The visualization is made out of D3.js, and the algortihms that we used are made out of different technologies.
 
-
-As this is a private project, I am gonna write some more stuff here. Mostly to have a clear idea on what means what inside the code. This, i think will make my life easier. 
 
 ## Implementation Details
 

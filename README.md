@@ -1,14 +1,6 @@
-# overlappingRect_Viz
+# OL-HeatMap
 
-Overlapping Rectangle Visualization is a dashboard for visualizing overlapping geometric shapes. The visualization is made out of D3.js, and the algortihms that we used are made out of different technologies.
-
-
-## Implementation Details
-
-This has two parts, they are disconnected and often connected at the same time. First part is Algorithms used and from where. Second part is about the visualization operations done on them.
-
-### Algorithms and Libraries
-This part has two libraries used so far. It uses Tilemachos's [his github link] for the SLIG algorithm which creates the data of the visualization that we have. 
+OL-HeatMap [Overlapping HeatMap] Visualization is a dashboard for visualizing overlapping geometric shapes. The visualization is made out of D3.js, and the algortihms that we used are made out of different technologies.
 
 
 
